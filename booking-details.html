@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Details | WorkHub</title>
+  <meta name="description" content="View comprehensive details, check-in QR code, and receipt for your WorkHub reservation.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/booking-details.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="details-page-container">
+    <div style="font-size: 0.85rem; margin-bottom: 1.5rem; color: var(--text-muted);">
+      <a href="booking-history.html">&larr; Back to Booking History</a>
+    </div>
+
+    <div class="details-grid">
+      <!-- Main Details Card -->
+      <div class="details-main-card">
+        <div class="details-header-row">
+          <div>
+            <h1 id="details-title" style="font-size: 1.8rem; margin-bottom: 0.25rem;">Business Plan Membership</h1>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">Booking ID: <strong id="details-id" style="color: var(--primary);">BK20260731-8F4K</strong></div>
+          </div>
+          <span id="details-status" class="badge badge-available">Active</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">LOCATION</span>
+            <div id="details-location" style="font-weight: 700;">Manhattan Hub, NY</div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">BOOKING DATE</span>
+            <div id="details-date" style="font-weight: 700;">July 31, 2026</div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">TIME SLOT / DURATION</span>
+            <div id="details-time" style="font-weight: 700;">Full Day Access</div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">TOTAL AMOUNT PAID</span>
+            <div id="details-price" style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">$74.00</div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">CUSTOMER</span>
+            <div id="details-user-name" style="font-weight: 700;">Sarah Jenkins</div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase;">PAYMENT METHOD</span>
+            <div id="details-pay-method" style="font-weight: 700;">Credit Card</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="showToast('Receipt downloaded!', 'success');">📄 Download Invoice</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-cancel-this-booking">Cancel Booking</button>
+        </div>
+      </div>
+
+      <!-- Check-in QR Access Sidebar Card -->
+      <aside class="qr-access-card">
+        <div class="qr-code-box">📱</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.35rem;">Digital Access Pass</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Scan this QR code at the turnstile or front desk to unlock workspace doors.</p>
+        <button class="btn btn-primary btn-sm btn-block" onclick="showToast('QR code refreshed.', 'success');">Refresh Pass</button>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/booking-details.js"></script>
+</body>
+</html>

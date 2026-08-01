@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Analytics - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item active">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Search analytics reports...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')">🔔</button>
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+            </div>
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">⚙️ Settings</a>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">Reports & Analytics</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Comprehensive business metrics, workspace utilization, and customer insights.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-secondary" onclick="exportReport('excel')">📊 Export Excel</button>
+            <button class="btn btn-primary" onclick="exportReport('pdf')">📄 Export PDF Report</button>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Quarterly Revenue</span>
+              <span class="metric-value">$61,000</span>
+              <span class="metric-change positive">↑ 24% Q-o-Q</span>
+            </div>
+            <div class="metric-icon-box icon-blue">💰</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Total Bookings</span>
+              <span class="metric-value">1,420</span>
+              <span class="metric-change positive">↑ 16% volume</span>
+            </div>
+            <div class="metric-icon-box icon-green">📅</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Space Occupancy</span>
+              <span class="metric-value">84.2%</span>
+              <span class="metric-change positive">High Efficiency</span>
+            </div>
+            <div class="metric-icon-box icon-amber">🏢</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Growth Rate</span>
+              <span class="metric-value">+18.5%</span>
+              <span class="metric-change positive">Steady Expansion</span>
+            </div>
+            <div class="metric-icon-box icon-cyan">📈</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">CSAT Rating</span>
+              <span class="metric-value">4.9 / 5.0</span>
+              <span class="metric-change positive">⭐ Premium Grade</span>
+            </div>
+            <div class="metric-icon-box icon-green">⭐</div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS CHARTS GRID -->
+        <div class="dashboard-charts-grid">
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Quarterly Revenue Breakdown</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Earnings per quarter across workspace zones</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportRevCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Occupancy Rate by Zone (%)</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Capacity utilization analysis</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportOccupancyCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-charts-grid">
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Revenue Sources</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Percentage contribution per business unit</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportSourcesCanvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Report Templates Widget -->
+          <div class="card">
+            <h3 class="chart-title" style="margin-bottom:1rem;">Pre-built Report Generators</h3>
+            <div class="flex flex-col gap-3">
+              <button class="btn btn-secondary justify-between" onclick="triggerGenerateReport('Financial Summary')">
+                <span>📑 Financial Summary Report</span>
+                <span>Generate →</span>
+              </button>
+              <button class="btn btn-secondary justify-between" onclick="triggerGenerateReport('Utilization Analysis')">
+                <span>🏢 Utilization Analysis</span>
+                <span>Generate →</span>
+              </button>
+              <button class="btn btn-secondary justify-between" onclick="triggerGenerateReport('Member Retention')">
+                <span>👥 Member Retention Log</span>
+                <span>Generate →</span>
+              </button>
+              <button class="btn btn-secondary justify-between" onclick="triggerGenerateReport('System Audit Log')">
+                <span>🛡️ Security & Audit Log</span>
+                <span>Generate →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

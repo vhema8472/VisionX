@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desk Management - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item active">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Search desks or rooms...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')">🔔</button>
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+            </div>
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">⚙️ Settings</a>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">Desk Management</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Visual floor plan, desk occupancy status, and capacity controls.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-primary" onclick="showToast('Add Desk feature ready', 'info')">+ Add Desk / Room</button>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Total Desks</span>
+              <span class="metric-value" id="desk-total">0</span>
+            </div>
+            <div class="metric-icon-box icon-blue">🖥️</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Available</span>
+              <span class="metric-value" id="desk-available">0</span>
+            </div>
+            <div class="metric-icon-box icon-green">🟢</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Occupied</span>
+              <span class="metric-value" id="desk-occupied">0</span>
+            </div>
+            <div class="metric-icon-box icon-amber">🟡</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Reserved</span>
+              <span class="metric-value" id="desk-reserved">0</span>
+            </div>
+            <div class="metric-icon-box icon-cyan">🔵</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Maintenance</span>
+              <span class="metric-value" id="desk-maintenance">0</span>
+            </div>
+            <div class="metric-icon-box icon-red">🔴</div>
+          </div>
+        </div>
+
+        <!-- VISUAL FLOOR MAP GRID -->
+        <div class="card" style="margin-bottom:1.75rem;">
+          <div class="flex justify-between items-center" style="margin-bottom:1.25rem;">
+            <div>
+              <h3 class="chart-title">Workspace Floor Plan</h3>
+              <p class="text-muted" style="font-size:0.8rem;">Click any workspace element to inspect or update status</p>
+            </div>
+            <div class="flex gap-3">
+              <select id="desk-grid-filter" class="table-filter-select">
+                <option value="ALL">All Statuses</option>
+                <option value="Available">Available</option>
+                <option value="Occupied">Occupied</option>
+                <option value="Reserved">Reserved</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="desk-floor-map" id="desk-floor-grid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- DESKS TABLE -->
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div class="table-title-group">
+              <h3>Desks & Rooms Inventory</h3>
+              <p>Detailed capacity and pricing table</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Desk / Room Number</th>
+                  <th>Type</th>
+                  <th>Zone / Floor</th>
+                  <th>Capacity</th>
+                  <th>Rate</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="desks-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- INSPECT DESK MODAL -->
+  <div id="inspect-desk-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="inspect-desk-title">Desk Details</h3>
+        <button class="modal-close-btn" onclick="closeModal('inspect-desk-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="inspect-desk-info">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('inspect-desk-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESERVE DESK MODAL -->
+  <div id="reserve-desk-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Reserve <span id="reserve-desk-name"></span></h3>
+        <button class="modal-close-btn" onclick="closeModal('reserve-desk-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Customer Name</label>
+          <input type="text" id="reserve-user-name" class="form-control" placeholder="e.g. Sarah Miller">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('reserve-desk-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="executeDeskReservation()">Confirm Reservation</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/desks.js"></script>
+</body>
+</html>

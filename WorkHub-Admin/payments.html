@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Management - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item active">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Search invoices...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')">🔔</button>
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+            </div>
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">⚙️ Settings</a>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">Payment Management</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Track financial revenue streams, billing invoices, and transaction logs.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-secondary" id="btn-export-invoices-csv">📥 Export CSV</button>
+            <button class="btn btn-primary" onclick="showToast('Create Invoice form ready', 'info')">+ Create Invoice</button>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Today's Revenue</span>
+              <span class="metric-value">$1,280.00</span>
+              <span class="metric-change positive">↑ 14% vs yesterday</span>
+            </div>
+            <div class="metric-icon-box icon-green">💵</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Monthly Revenue</span>
+              <span class="metric-value">$29,800.00</span>
+              <span class="metric-change positive">↑ 18.5% YoY</span>
+            </div>
+            <div class="metric-icon-box icon-blue">💰</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Pending Payments</span>
+              <span class="metric-value">$120.00</span>
+              <span class="metric-change negative">1 Invoice</span>
+            </div>
+            <div class="metric-icon-box icon-amber">⏳</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Success Rate</span>
+              <span class="metric-value">98.4%</span>
+              <span class="metric-change positive">High Reliability</span>
+            </div>
+            <div class="metric-icon-box icon-cyan">✅</div>
+          </div>
+        </div>
+
+        <!-- CHARTS SECTION -->
+        <div class="dashboard-charts-grid">
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Revenue Growth Trend ($)</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Historical earnings trajectory over recent months</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="paymentTrendCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Payment Methods</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Distribution across payment gateways</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="paymentMethodCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- INVOICES TABLE -->
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div class="table-title-group">
+              <h3>Invoice History</h3>
+              <p>Search and inspect customer receipts</p>
+            </div>
+            <div class="table-actions-group">
+              <input type="text" id="invoice-search-input" class="table-search-input" placeholder="Search invoice # or customer...">
+              <select id="invoice-status-filter" class="table-filter-select">
+                <option value="ALL">All Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Invoice Number</th>
+                  <th>Customer Name</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoices-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- INVOICE DETAIL MODAL -->
+  <div id="invoice-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Invoice <span id="inv-detail-id"></span></h3>
+        <button class="modal-close-btn" onclick="closeModal('invoice-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="inv-detail-content">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('invoice-modal')">Close</button>
+        <button class="btn btn-primary" onclick="showToast('Invoice printed!', 'success'); closeModal('invoice-modal');">Print Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/payments.js"></script>
+</body>
+</html>

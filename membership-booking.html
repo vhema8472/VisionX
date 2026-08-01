@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm your Membership | WorkHub</title>
+  <meta name="description" content="You're one step away from joining our professional ecosystem. Complete your WorkHub Business Membership checkout.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/membership-booking.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link active">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Checkout Container -->
+  <main class="checkout-page-container">
+    <!-- Breadcrumb -->
+    <div class="checkout-breadcrumb">
+      <a href="membership.html">Memberships</a> &nbsp;&gt;&nbsp; <span class="active-crumb">Checkout</span>
+    </div>
+
+    <!-- Page Header -->
+    <div class="checkout-header">
+      <h1>Confirm your Membership</h1>
+      <p>You're one step away from joining our professional ecosystem.</p>
+    </div>
+
+    <!-- 2 Column Checkout Layout -->
+    <div class="checkout-grid">
+      <!-- Left Column: Plan Summary + Personal Information -->
+      <div class="checkout-left-col">
+        <!-- Selected Plan Card -->
+        <div class="selected-plan-card">
+          <div class="plan-card-top">
+            <div>
+              <span class="plan-badge-pill">MOST POPULAR</span>
+              <h2 class="plan-title-heading">Business Plan</h2>
+              <p class="plan-desc-text">Full access to all premium locations, meeting rooms, and exclusive events.</p>
+            </div>
+            <div class="plan-price-box">
+              <div class="plan-price-val">$69</div>
+              <div class="plan-price-sub">per month, billed monthly</div>
+            </div>
+          </div>
+
+          <div class="plan-card-body">
+            <ul class="features-check-list">
+              <li><span class="green-check-icon">✓</span> Unlimited Workspace Booking</li>
+              <li><span class="green-check-icon">✓</span> Unlimited Meeting Room Usage</li>
+              <li><span class="green-check-icon">✓</span> Priority Customer Support</li>
+              <li><span class="green-check-icon">✓</span> Complimentary Refreshments</li>
+              <li><span class="green-check-icon">✓</span> Private Cabin Access</li>
+            </ul>
+
+            <img src="https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&w=400&q=80" alt="Business Plan Workspace" class="plan-thumb-img">
+          </div>
+        </div>
+
+        <!-- Personal Information Card -->
+        <div class="form-section-card">
+          <h3 class="form-section-header">
+            <span>👤</span> Personal Information
+          </h3>
+
+          <form id="membership-personal-form">
+            <div class="form-grid-2col">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" value="John Himler" id="checkout-fullname" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" value="John.Himler@workhub.com" id="checkout-email" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2col">
+              <div class="form-group">
+                <label class="form-label">Company (Optional)</label>
+                <input type="text" class="form-control" placeholder="e.g. Design Studio Inc." id="checkout-company">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" value="+91 -" id="checkout-phone">
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Security Trust Badges -->
+        <div class="security-trust-container">
+          <div class="security-trust-badges">
+            <div class="security-badge-item">
+              <span>🛡️</span> SSL SECURE
+            </div>
+            <div class="security-badge-item">
+              <span>🛡️</span> PCI COMPLIANT
+            </div>
+            <div class="security-badge-item">
+              <span>🛡️</span> 256-BIT AES
+            </div>
+          </div>
+          <p class="security-trust-subtext">
+            Your transaction is protected by bank-level security. We never store your full card details.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Column: Order Summary & Payment Method -->
+      <div class="checkout-right-col">
+        <div class="order-summary-card">
+          <h2 class="order-summary-title">Order Summary</h2>
+
+          <div class="summary-item-line">
+            <span>Executive Plan (Monthly)</span>
+            <strong style="color: var(--text-main);">$69.00</strong>
+          </div>
+
+          <div class="summary-item-line">
+            <span>Activation Fee</span>
+            <span class="waived-text">Waived</span>
+          </div>
+
+          <div class="summary-item-line">
+            <span>Tax (8%)</span>
+            <strong style="color: var(--text-main);">$5.00</strong>
+          </div>
+
+          <div class="summary-total-line">
+            <span>Total</span>
+            <span class="total-val" id="checkout-total-val">$74.00</span>
+          </div>
+
+          <!-- Coupon Code Promo Bar -->
+          <div class="coupon-code-row">
+            <input type="text" class="form-control" placeholder="PROMO CODE (e.g. WORKHUB20)" id="coupon-code-input">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-apply-coupon">Apply</button>
+          </div>
+
+          <!-- Select Payment Method -->
+          <div class="payment-selector-section">
+            <label class="select-payment-label">Select Payment Method</label>
+
+            <div class="payment-methods-list">
+              <!-- Radio Option 1: Credit or Debit Card -->
+              <div class="payment-method-tile selected" id="tile-card">
+                <input type="radio" name="payment-method" id="pay-card-radio" value="card" checked>
+                <div class="payment-tile-info">
+                  <span class="payment-tile-icon">💳</span>
+                  <div>
+                    <div class="payment-tile-title">Credit or Debit Card</div>
+                    <div class="payment-tile-sub">VISA, MASTERCARD, AMEX</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Radio Option 2: PayPal -->
+              <div class="payment-method-tile" id="tile-paypal">
+                <input type="radio" name="payment-method" id="pay-paypal-radio" value="paypal">
+                <div class="payment-tile-info">
+                  <span class="payment-tile-icon">💵</span>
+                  <div>
+                    <div class="payment-tile-title">PayPal</div>
+                    <div class="payment-tile-sub">FAST &amp; SECURE</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Inputs Container -->
+            <div class="card-fields-box" id="card-fields-box">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">Card Number</label>
+                <div class="card-number-wrapper">
+                  <input type="text" class="form-control" placeholder="0000 0000 0000 0000" id="card-number">
+                  <span class="lock-icon-right">🔒</span>
+                </div>
+              </div>
+
+              <div class="form-grid-2col">
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">Expiry Date</label>
+                  <input type="text" class="form-control" placeholder="MM/YY" id="card-expiry">
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label">CVC</label>
+                  <input type="password" class="form-control" placeholder="123" maxlength="4" id="card-cvc">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Complete Membership Primary Button -->
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-complete-membership" style="margin-top: 0.5rem;">Complete Membership</button>
+
+          <p class="terms-agreement-text">
+            By clicking "Complete Membership", you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Confirmation Modal -->
+  <div class="modal-overlay" id="modal-membership-success">
+    <div class="modal-box">
+      <div class="modal-icon">✓</div>
+      <h2 style="margin-bottom: 0.5rem; font-size: 1.6rem;">Welcome to Business Tier!</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your WorkHub Business Membership is active. A receipt and confirmation email have been sent to John.Himler@workhub.com.</p>
+      <button class="btn btn-primary btn-block" id="btn-close-membership-modal">View Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/membership-booking.js"></script>
+</body>
+</html>

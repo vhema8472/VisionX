@@ -1,0 +1,244 @@
+/* ==========================================
+   WORKHUB - SIMPLIFIED WORKSPACE PAGE STYLES
+   ========================================== */
+
+.workspace-page-container {
+  max-width: 1280px;
+  margin: 2rem auto 5rem;
+  padding: 0 1.5rem;
+}
+
+/* Discovery Filter Card */
+.availability-filter-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.availability-filter-card h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+}
+
+.filter-controls-row {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(5, 1fr) auto;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.filter-facilities-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.facilities-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.facility-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.facility-pill.active, .facility-pill:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Workspace View Header */
+.workspace-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.view-mode-toggle {
+  display: inline-flex;
+  background: #E2E8F0;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.view-btn {
+  border: none;
+  background: transparent;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.view-btn.active {
+  background: white;
+  color: var(--text-main);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.last-updated-text {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+/* Full Width Grid of Workspace Cards */
+.workspace-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.ws-item-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+
+.ws-item-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #CBD5E1;
+}
+
+.ws-item-thumb {
+  position: relative;
+  height: 200px;
+}
+
+.ws-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ws-status-badge {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+}
+
+.ws-item-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ws-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.35rem;
+}
+
+.ws-item-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.ws-item-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.ws-item-price small {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.ws-item-subloc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.ws-item-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.85rem;
+}
+
+.ws-tags-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.ws-tag {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.ws-availability-note {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.ws-item-actions {
+  margin-top: auto;
+}
+
+/* Load More Bar */
+.load-more-container {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+/* Responsive Grid Breakdown */
+@media (max-width: 1100px) {
+  .workspace-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filter-controls-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .workspace-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .filter-controls-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

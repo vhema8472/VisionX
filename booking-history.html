@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Booking History | WorkHub</title>
+  <meta name="description" content="View and manage your active, completed, and past workspace desk reservations and memberships.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/booking-history.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="history-page-container">
+    <div class="history-header">
+      <h1>My Booking History</h1>
+      <p>Manage all your active reservations, past bookings, and membership invoices.</p>
+    </div>
+
+    <!-- Filter Bar & Tabs -->
+    <div class="history-filter-bar">
+      <div class="history-tabs-list">
+        <button type="button" class="history-tab-btn active" data-filter="all">All Bookings</button>
+        <button type="button" class="history-tab-btn" data-filter="active">Active</button>
+        <button type="button" class="history-tab-btn" data-filter="completed">Completed</button>
+        <button type="button" class="history-tab-btn" data-filter="cancelled">Cancelled</button>
+      </div>
+      <a href="workspace.html" class="btn btn-primary btn-sm">+ New Booking</a>
+    </div>
+
+    <!-- Bookings List Container -->
+    <div class="history-cards-list" id="history-cards-container">
+      <!-- Dynamically Rendered by js/booking-history.js -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/booking-history.js"></script>
+</body>
+</html>

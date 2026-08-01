@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmation | WorkHub</title>
+  <meta name="description" content="Your workspace booking has been successfully confirmed. View your receipt and access pass.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/booking-success.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="success-page-container">
+    <div class="success-card">
+      
+      <!-- Checkmark Animation Wrapper -->
+      <div class="success-icon-wrapper">
+        <svg class="checkmark-svg" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+
+      <h1 class="success-title">🎉 Payment Successful!</h1>
+      <p class="success-subtitle">Your reservation is confirmed. A receipt and digital access pass have been sent to your email.</p>
+
+      <div class="booking-id-badge">
+        Booking ID: <strong id="receipt-booking-id">BK20260731-8F4K</strong>
+      </div>
+
+      <!-- Receipt Breakdown Grid -->
+      <div class="receipt-grid">
+        <div class="receipt-row">
+          <span class="receipt-label">Workspace Reserved</span>
+          <span class="receipt-value" id="receipt-ws-title">Executive Private Cabin P-12</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Reservation Date</span>
+          <span class="receipt-value" id="receipt-date">31 July 2026</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Time Range &amp; Duration</span>
+          <span class="receipt-value" id="receipt-time">10:00 AM – 01:00 PM (3 Hours)</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Total Amount Paid</span>
+          <span class="receipt-value amount" id="receipt-amount">$148.50</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Booking Status</span>
+          <span class="receipt-value" id="receipt-status" style="color:var(--status-available); font-weight:800;">Confirmed</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="success-actions">
+        <button type="button" class="btn btn-primary" onclick="window.print()">📄 Print Receipt / Invoice</button>
+        <a href="booking-history.html" class="btn btn-secondary">📋 View in Booking History</a>
+        <a href="index.html" class="btn btn-outline">🏠 Return Home</a>
+      </div>
+
+      <!-- Support Help Box -->
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+        Need to make changes to your reservation? Contact 24/7 Desk Concierge at <strong>support@workhub.io</strong> or visit your <a href="profile.html" style="color: var(--primary);">Profile Settings</a>.
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/booking-success.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Details | WorkHub</title>
+  <meta name="description" content="Explore workspace features, capacity, amenities, and book your desk on WorkHub.">
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    .ws-details-container { max-width: 1100px; margin: 2rem auto 5rem; padding: 0 1.5rem; }
+    .ws-details-card { background: white; border: 1px solid var(--border-color); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .ws-details-hero { height: 350px; width: 100%; position: relative; }
+    .ws-details-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .ws-details-body { padding: 2.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link active">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="ws-details-container">
+    <div style="margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+      <a href="workspace.html">&larr; Back to Workspaces</a>
+    </div>
+
+    <div class="ws-details-card">
+      <div class="ws-details-hero">
+        <img src="https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&w=1200&q=80" id="detail-img" alt="Workspace">
+      </div>
+
+      <div class="ws-details-body">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+            <span class="badge badge-available" id="detail-status">Available Now</span>
+            <span class="rating-badge" style="position:static;">★ <span id="detail-rating">4.8</span></span>
+          </div>
+          <h1 id="detail-name" style="font-size:2.25rem; margin-bottom:0.5rem;">Nexus Hot Desk #04</h1>
+          <p id="detail-hub" style="color:var(--text-muted); font-size:1.05rem; margin-bottom:1.5rem;">📍 Manhattan Hub, NY • Capacity: <span id="detail-capacity">1 Person</span></p>
+
+          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Description</h3>
+          <p id="detail-desc" style="color:var(--text-muted); line-height:1.6; margin-bottom:2rem;">Ergonomic open-plan hot desk with high-speed fiber internet and dual power outlets.</p>
+
+          <h3 style="font-size:1.15rem; margin-bottom:0.75rem;">Included Amenities</h3>
+          <div id="detail-amenities" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:2rem;">
+            <!-- Amenities chips -->
+          </div>
+        </div>
+
+        <!-- Right Booking Box -->
+        <div style="background:var(--bg-subtle); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.75rem; display:flex; flex-direction:column;">
+          <div style="font-size:0.85rem; color:var(--text-muted);">Pricing Rate</div>
+          <div id="detail-price" style="font-size:2.25rem; font-weight:800; color:var(--primary); margin-bottom:0.25rem;">$12 /hr</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Or $45 /day (Daily Pass)</div>
+
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-detail-book" style="margin-top:auto;">Book Now</button>
+          <p style="font-size:0.75rem; text-align:center; color:var(--text-light); margin-top:0.75rem;">Instant reservation • Free cancellation</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id') || 'WS001';
+      showLoading();
+      try {
+        const res = await API.getWorkspaceById(id);
+        const ws = res.data;
+        if (ws) {
+          document.getElementById('detail-img').src = ws.image;
+          document.getElementById('detail-name').textContent = ws.name;
+          document.getElementById('detail-hub').textContent = `📍 ${ws.hubName || ws.location} • Capacity: ${ws.capacity}`;
+          document.getElementById('detail-desc').textContent = ws.description;
+          document.getElementById('detail-rating').textContent = ws.rating;
+          document.getElementById('detail-status').textContent = ws.status;
+          document.getElementById('detail-price').textContent = `$${ws.hourlyPrice} /hr`;
+          document.getElementById('detail-amenities').innerHTML = (ws.amenities || []).map(a => `<span class="ws-tag">✓ ${a}</span>`).join('');
+          
+          document.getElementById('btn-detail-book').onclick = () => {
+            sessionStorage.setItem('selectedWorkspace', JSON.stringify(ws));
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+              sessionStorage.setItem('auth_redirect_toast', 'Please login to book a workspace.');
+              window.location.href = 'login.html';
+            } else {
+              window.location.href = `booking.html?id=${ws.id}`;
+            }
+          };
+        }
+      } catch (err) {
+        showToast('Error loading details.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  </script>
+</body>
+</html>

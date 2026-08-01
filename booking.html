@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desk Booking & Multi-Hour Checkout | WorkHub</title>
+  <meta name="description" content="Book hot desks, dedicated desks, and meeting rooms by selecting continuous multi-hour time slots.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/booking.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link active">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Booking Page Container -->
+  <main class="booking-page-container">
+    <div class="booking-grid">
+      
+      <!-- Left Column: Workspace Selected Preview Card -->
+      <aside class="booking-sidebar">
+        <div class="workspace-preview-card">
+          <div class="preview-thumb-wrapper">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" id="preview-img" alt="Workspace Preview">
+            <span class="badge badge-available preview-badge" id="preview-status">Available Now</span>
+          </div>
+
+          <div class="preview-content">
+            <h2 class="preview-title" id="preview-name">Executive Private Cabin P-12</h2>
+            <div class="preview-info-line" id="preview-type-loc">🏢 Private Cabin • Downtown Executive Hub</div>
+            
+            <div class="preview-amenities" id="preview-amenities">
+              <span class="amenity-chip">✓ Soundproof</span>
+              <span class="amenity-chip">✓ 4K Screen</span>
+              <span class="amenity-chip">✓ Motorized Desk</span>
+            </div>
+
+            <div class="preview-price-box">
+              <span class="price-pill" id="preview-hourly-price">$45.00 / hour</span>
+              <small style="color: var(--text-muted);">Capacity: <strong id="preview-capacity">1-2 People</strong></small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust Security Card -->
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem; margin-top: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+            <span>🛡️</span>
+            <div>
+              <strong style="color: var(--text-main); display: block;">Instant Reservation &amp; Guarantee</strong>
+              Free cancellation up to 24h before start time.
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Booking Configuration Form & Dynamic Order Breakdown -->
+      <div class="booking-form-main">
+        <div class="form-card">
+          <h1 class="form-card-title">📅 Workspace Reservation Configuration</h1>
+          
+          <form id="booking-details-form" onsubmit="event.preventDefault();">
+            
+            <!-- Date & Start Time Selection -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">Select Date</label>
+                <input type="date" class="form-control" id="booking-date" value="2026-07-31" min="2026-07-31">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">Select Start Time</label>
+                <select class="form-select" id="start-time">
+                  <option value="09:00">09:00 AM</option>
+                  <option value="10:00" selected>10:00 AM</option>
+                  <option value="11:00">11:00 AM</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="13:00">01:00 PM</option>
+                  <option value="14:00">02:00 PM</option>
+                  <option value="15:00">03:00 PM</option>
+                  <option value="16:00">04:00 PM</option>
+                  <option value="17:00">05:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Duration Selection & Calculated End Time Display -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">Select Duration</label>
+                <select class="form-select" id="booking-duration">
+                  <option value="1">1 Hour</option>
+                  <option value="2">2 Hours</option>
+                  <option value="3" selected>3 Hours</option>
+                  <option value="4">4 Hours</option>
+                  <option value="5">5 Hours</option>
+                  <option value="6">6 Hours</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">Calculated Time Range</label>
+                <div id="end-time-display" style="background: var(--bg-subtle); border: 1px solid var(--border-color); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); font-weight: 800; font-size: 0.95rem; color: var(--primary-dark);">
+                  10:00 AM – 01:00 PM (3 Hours)
+                </div>
+              </div>
+            </div>
+
+            <!-- Continuous Availability Feedback & Suggested Alternatives Box -->
+            <div id="availability-feedback-box" style="margin-bottom: 1.5rem;">
+              <!-- Rendered dynamically by js/booking.js -->
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Special Request (Optional)</label>
+              <textarea class="form-control" placeholder="Any specific equipment or seating requirements?" id="special-request" rows="2"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <!-- Standalone Order & Price Breakdown Card -->
+        <div class="summary-box-card">
+          <h3 class="summary-card-title">
+            <span>Order &amp; Price Breakdown</span>
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); background: var(--bg-subtle); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); border: 1px solid var(--border-color);">Live Calculation</span>
+          </h3>
+          
+          <div class="summary-line">
+            <span>Workspace:</span>
+            <strong id="summary-ws-name">Executive Private Cabin P-12</strong>
+          </div>
+          <div class="summary-line">
+            <span>Date &amp; Time Range:</span>
+            <strong id="summary-time-range">2026-07-31 (10:00 AM – 01:00 PM)</strong>
+          </div>
+          <div class="summary-line">
+            <span>Booking Duration:</span>
+            <strong id="summary-duration">3 Hours</strong>
+          </div>
+          <div class="summary-line">
+            <span>Hourly Rate:</span>
+            <strong id="summary-hourly-rate">$45.00 / hour</strong>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-line">
+            <span>Subtotal:</span>
+            <strong id="summary-base-price">$135.00</strong>
+          </div>
+          <div class="summary-line">
+            <span>Taxes &amp; Service Fee (10%):</span>
+            <strong id="summary-taxes">$13.50</strong>
+          </div>
+
+          <div class="summary-total-line">
+            <span>Total Payable Amount:</span>
+            <span class="total-amount-display" id="summary-total-amount">$148.50</span>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-confirm-booking" style="margin-top: 1.5rem;">Confirm &amp; Proceed to Payment &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

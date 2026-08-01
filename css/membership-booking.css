@@ -1,0 +1,414 @@
+/* ==========================================
+   WORKHUB - MEMBERSHIP BOOKING / CHECKOUT STYLES
+   ========================================== */
+
+.checkout-page-container {
+  max-width: 1280px;
+  margin: 1.5rem auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.checkout-breadcrumb {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.checkout-breadcrumb a:hover {
+  color: var(--primary);
+}
+
+.checkout-breadcrumb .active-crumb {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.checkout-header {
+  margin-bottom: 2.5rem;
+}
+
+.checkout-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.5px;
+}
+
+.checkout-header p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* Two Column Layout Grid */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.checkout-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.checkout-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Selected Plan Card */
+.selected-plan-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.plan-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.plan-badge-pill {
+  background: var(--accent-teal-bg);
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.plan-title-heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.plan-desc-text {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.plan-price-box {
+  text-align: right;
+}
+
+.plan-price-val {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.plan-price-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.plan-card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.features-check-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.features-check-list li {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.green-check-icon {
+  width: 20px;
+  height: 20px;
+  background: var(--status-available-bg);
+  color: var(--status-available);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.plan-thumb-img {
+  width: 170px;
+  height: 110px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Personal Information Card */
+.form-section-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-section-header {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-main);
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Security Trust Badges */
+.security-trust-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.security-trust-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.6rem;
+}
+
+.security-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.security-trust-subtext {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+/* Order Summary Right Card */
+.order-summary-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.order-summary-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.summary-item-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.summary-item-line .waived-text {
+  color: var(--status-available);
+  font-weight: 700;
+}
+
+.summary-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.summary-total-line .total-val {
+  color: var(--primary);
+  font-size: 1.75rem;
+}
+
+/* Payment Method Selector */
+.payment-selector-section {
+  margin-top: 1.75rem;
+}
+
+.select-payment-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+.payment-methods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-method-tile {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  background: white;
+  transition: var(--transition);
+}
+
+.payment-method-tile:hover, .payment-method-tile.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+  background: var(--primary-light);
+}
+
+.payment-method-tile input[type="radio"] {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+}
+
+.payment-tile-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.payment-tile-icon {
+  font-size: 1.25rem;
+}
+
+.payment-tile-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.payment-tile-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Card Inputs Container */
+.card-fields-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-number-wrapper {
+  position: relative;
+}
+
+.card-number-wrapper input {
+  padding-right: 2.5rem;
+}
+
+.lock-icon-right {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.terms-agreement-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 1rem;
+  line-height: 1.4;
+}
+
+.terms-agreement-text a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Coupon Code Bar */
+.coupon-code-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.coupon-code-row input {
+  flex: 1;
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .plan-card-body {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .plan-thumb-img {
+    width: 100%;
+    height: 140px;
+  }
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .security-trust-badges {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

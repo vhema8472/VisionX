@@ -1,0 +1,15 @@
+/* Register Page CSS */
+@import url('login.css');
+
+.terms-checkbox-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+.terms-checkbox-label input {
+  margin-top: 3px;
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkHub Admin - Workspace Management System</title>
+  <script src="js/main.js"></script>
+  <script>
+    // Entry point redirect guard
+    document.addEventListener('DOMContentLoaded', () => {
+      const auth = localStorage.getItem('workhub_admin_user');
+      if (auth) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</head>
+<body style="background-color: #F5F7FB; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh;">
+  <p style="color: #6B7280; font-size: 1rem;">Redirecting to WorkHub Admin...</p>
+</body>
+</html>

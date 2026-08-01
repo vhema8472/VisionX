@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Checkout | WorkHub</title>
+  <meta name="description" content="Complete your payment securely with WorkHub using UPI, Credit/Debit Card, or Net Banking.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/payment.css">
+</head>
+<body>
+
+  <!-- Site Header Navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Payment Page Container -->
+  <main class="payment-page-container">
+    <!-- Breadcrumb -->
+    <div class="payment-breadcrumb">
+      <a href="index.html">Home</a> &nbsp;&gt;&nbsp; <a href="workspace.html">Booking</a> &nbsp;&gt;&nbsp; <span style="color: var(--primary); font-weight: 600;">Payment</span>
+    </div>
+
+    <!-- Page Header -->
+    <div class="payment-header">
+      <h1>Complete Payment</h1>
+      <p>Select your preferred payment method to finalize your reservation.</p>
+    </div>
+
+    <!-- 2 Column Payment Layout -->
+    <div class="payment-grid">
+      <!-- Left Column: Payment Methods & Input Fields -->
+      <div class="payment-left-col">
+        <div class="payment-methods-card">
+          <h2>💳 Select Payment Method</h2>
+
+          <!-- Payment Tabs (UPI, Credit Card, Debit Card, Net Banking) -->
+          <div class="payment-options-nav">
+            <button type="button" class="payment-tab-btn active" data-method="credit">
+              <span class="tab-icon">💳</span>
+              <span>Credit Card</span>
+            </button>
+            <button type="button" class="payment-tab-btn" data-method="debit">
+              <span class="tab-icon">💳</span>
+              <span>Debit Card</span>
+            </button>
+            <button type="button" class="payment-tab-btn" data-method="upi">
+              <span class="tab-icon">📱</span>
+              <span>UPI Payment</span>
+            </button>
+            <button type="button" class="payment-tab-btn" data-method="netbank">
+              <span class="tab-icon">🏛️</span>
+              <span>Net Banking</span>
+            </button>
+          </div>
+
+          <!-- Panel 1: Credit Card (Active by Default) -->
+          <div class="payment-panel active" id="panel-credit">
+            <form id="credit-card-form">
+              <div class="form-group">
+                <label class="form-label">Cardholder Name</label>
+                <input type="text" class="form-control" placeholder="John Himler" id="credit-card-name" value="John Himler">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Card Number</label>
+                <div style="position: relative;">
+                  <input type="text" class="form-control" placeholder="4532 1234 5678 9012" id="credit-card-number" value="4532 1234 5678 9012">
+                  <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;">🔒</span>
+                </div>
+              </div>
+
+              <div class="form-grid-2col">
+                <div class="form-group">
+                  <label class="form-label">Expiry Date</label>
+                  <input type="text" class="form-control" placeholder="12/28" id="credit-card-expiry" value="12/28">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">CVC / CVV</label>
+                  <input type="password" class="form-control" placeholder="123" maxlength="4" id="credit-card-cvc" value="882">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Panel 2: Debit Card -->
+          <div class="payment-panel" id="panel-debit">
+            <form id="debit-card-form">
+              <div class="form-group">
+                <label class="form-label">Cardholder Name</label>
+                <input type="text" class="form-control" placeholder="Name on Debit Card" id="debit-card-name">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Debit Card Number</label>
+                <input type="text" class="form-control" placeholder="0000 0000 0000 0000" id="debit-card-number">
+              </div>
+
+              <div class="form-grid-2col">
+                <div class="form-group">
+                  <label class="form-label">Expiry Date</label>
+                  <input type="text" class="form-control" placeholder="MM/YY" id="debit-card-expiry">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">CVV</label>
+                  <input type="password" class="form-control" placeholder="123" maxlength="4" id="debit-card-cvc">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Panel 3: UPI Payment -->
+          <div class="payment-panel" id="panel-upi">
+            <div class="upi-qr-box">
+              <div class="upi-qr-code">📱</div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 0.25rem;">Scan QR to Pay via Google Pay / PhonePe / Paytm</h4>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">UPI ID: <strong>workhub@icici</strong></p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Or Enter your VPA / UPI ID</label>
+              <input type="text" class="form-control" placeholder="username@upi" id="upi-id-input">
+            </div>
+
+            <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+              <input type="checkbox" id="qr-scanned-check">
+              <span>I have completed the payment via UPI app</span>
+            </label>
+          </div>
+
+          <!-- Panel 4: Net Banking -->
+          <div class="payment-panel" id="panel-netbank">
+            <label class="form-label" style="margin-bottom: 0.75rem;">Popular Banks</label>
+            <div class="bank-select-grid">
+              <button type="button" class="bank-option-btn selected">HDFC Bank</button>
+              <button type="button" class="bank-option-btn">ICICI Bank</button>
+              <button type="button" class="bank-option-btn">SBI Bank</button>
+              <button type="button" class="bank-option-btn">Axis Bank</button>
+              <button type="button" class="bank-option-btn">Kotak Bank</button>
+              <button type="button" class="bank-option-btn">Other Banks</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Select Other Bank</label>
+              <select class="form-select">
+                <option>Choose from list...</option>
+                <option>Bank of Baroda</option>
+                <option>Punjab National Bank</option>
+                <option>Canara Bank</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Trust Note -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">
+          <span>🔒 256-Bit SSL Encrypted</span>
+          <span>🛡️ PCI-DSS Level 1 Verified</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Order Summary Sidebar -->
+      <div class="payment-right-col">
+        <div class="payment-summary-card">
+          <div class="summary-card-header">
+            <h3 style="font-size: 1.25rem;">Booking Summary</h3>
+            <span class="booking-type-tag" id="summary-type-tag">Membership</span>
+          </div>
+
+          <!-- Dynamic Details Rendered via JS -->
+          <div id="payment-summary-details">
+            <!-- Will be populated dynamically by payment.js -->
+          </div>
+
+          <div class="summary-total-box">
+            <div class="total-label">Total Payable</div>
+            <div class="total-price-large" id="summary-total-price">$74.00</div>
+          </div>
+
+          <div class="payment-actions-bar">
+            <button type="button" class="btn btn-secondary" id="btn-payment-back">&larr; Back</button>
+            <button type="button" class="btn btn-primary" id="btn-confirm-payment">Confirm Payment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/payment.js"></script>
+</body>
+</html>

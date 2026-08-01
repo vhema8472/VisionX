@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership Management - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item active">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Search memberships...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')">🔔</button>
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+            </div>
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">⚙️ Settings</a>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">Membership Management</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Manage tier plans, member renewals, and promotional policies.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-primary" onclick="openAddMembershipModal()">+ Add New Membership Plan</button>
+            <button class="btn btn-secondary" onclick="triggerIssueCoupon()">🎟️ Issue Coupon</button>
+            <button class="btn btn-secondary" onclick="openPolicyEditor()">📜 Policy Editor</button>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Total Members</span>
+              <span class="metric-value" id="mb-total-members">0</span>
+            </div>
+            <div class="metric-icon-box icon-blue">👥</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Premium Members</span>
+              <span class="metric-value" id="mb-premium-members">0</span>
+            </div>
+            <div class="metric-icon-box icon-green">👑</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Expiring Soon</span>
+              <span class="metric-value" id="mb-expiring-soon">0</span>
+            </div>
+            <div class="metric-icon-box icon-amber">⏳</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Plan Revenue</span>
+              <span class="metric-value" id="mb-revenue">$0.00</span>
+            </div>
+            <div class="metric-icon-box icon-cyan">💰</div>
+          </div>
+        </div>
+
+        <!-- MEMBERSHIP PLANS GRID -->
+        <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:1.25rem;">Active Membership Plans</h2>
+        <div class="membership-plans-grid">
+          <!-- BASIC -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <h3>Basic Pass</h3>
+              <p class="text-muted" style="font-size:0.8rem;">Occasional Coworker</p>
+            </div>
+            <div class="plan-price">$99 <span>/ month</span></div>
+            <ul class="plan-features">
+              <li>10 Hot Desk Hours/mo</li>
+              <li>High-speed Wi-Fi 6</li>
+              <li>Free Coffee & Tea</li>
+              <li>Community Forum Access</li>
+            </ul>
+            <button class="btn btn-secondary w-full" onclick="showToast('Editing Basic Pass', 'info')">Edit Tier</button>
+          </div>
+
+          <!-- PROFESSIONAL -->
+          <div class="plan-card featured">
+            <span class="plan-badge">Popular</span>
+            <div class="plan-header">
+              <h3>Professional</h3>
+              <p class="text-muted" style="font-size:0.8rem;">Dedicated Freelancers</p>
+            </div>
+            <div class="plan-price">$199 <span>/ month</span></div>
+            <ul class="plan-features">
+              <li>Unlimited Hot Desk Access</li>
+              <li>5 Meeting Room Hours</li>
+              <li>$20 Cafe Credits/mo</li>
+              <li>24/7 Keycard Access</li>
+            </ul>
+            <button class="btn btn-primary w-full" onclick="showToast('Editing Professional Tier', 'info')">Edit Tier</button>
+          </div>
+
+          <!-- ENTERPRISE -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <h3>Enterprise</h3>
+              <p class="text-muted" style="font-size:0.8rem;">Growing Teams & Startups</p>
+            </div>
+            <div class="plan-price">$499 <span>/ month</span></div>
+            <ul class="plan-features">
+              <li>Dedicated Desk / Cabin</li>
+              <li>20 Meeting Room Hours</li>
+              <li>Mail Handling & Printing</li>
+              <li>Dedicated IP Address</li>
+            </ul>
+            <button class="btn btn-secondary w-full" onclick="showToast('Editing Enterprise Tier', 'info')">Edit Tier</button>
+          </div>
+
+          <!-- VIP -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <h3>VIP Suite</h3>
+              <p class="text-muted" style="font-size:0.8rem;">Executives & Private Offices</p>
+            </div>
+            <div class="plan-price">$899 <span>/ month</span></div>
+            <ul class="plan-features">
+              <li>Private Office Suite</li>
+              <li>Unlimited Meeting Rooms</li>
+              <li>Personal Lounge Access</li>
+              <li>Dedicated Support Manager</li>
+            </ul>
+            <button class="btn btn-secondary w-full" onclick="showToast('Editing VIP Suite', 'info')">Edit Tier</button>
+          </div>
+        </div>
+
+        <!-- MEMBER DIRECTORY & RENEWALS -->
+        <div class="dashboard-tables-grid">
+          <!-- Member Directory Table -->
+          <div class="table-card">
+            <div class="table-header-toolbar">
+              <div class="table-title-group">
+                <h3>Member Directory</h3>
+                <p>Current active memberships</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Plan</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="membership-tbody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Upcoming Renewals & Recent Activity -->
+          <div class="card">
+            <h3 class="chart-title" style="margin-bottom:1rem;">Upcoming Renewals</h3>
+            <div id="renewals-list">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ISSUE COUPON MODAL -->
+  <div id="issue-coupon-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Issue Promo Coupon</h3>
+        <button class="modal-close-btn" onclick="closeModal('issue-coupon-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Coupon Code</label>
+          <input type="text" id="coupon-code" class="form-control" value="SUMMER2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discount Percentage (%)</label>
+          <input type="number" class="form-control" value="20">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('issue-coupon-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCoupon()">Issue Coupon</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POLICY EDITOR MODAL -->
+  <div id="policy-editor-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Membership Policy Editor</h3>
+        <button class="modal-close-btn" onclick="closeModal('policy-editor-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Cancellation Grace Period (Days)</label>
+          <input type="number" class="form-control" value="7">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Overtime Hourly Fee Rate ($)</label>
+          <input type="number" class="form-control" value="15">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('policy-editor-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePolicy()">Save Policy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD NEW MEMBERSHIP PLAN MODAL -->
+  <div id="add-membership-plan-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Membership Plan</h3>
+        <button class="modal-close-btn" onclick="closeModal('add-membership-plan-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Plan Name</label>
+          <input type="text" id="new-plan-name" class="form-control" placeholder="e.g. Executive Pro Tier">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monthly Price ($)</label>
+          <input type="number" id="new-plan-price" class="form-control" placeholder="299">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Included Features (comma separated)</label>
+          <input type="text" id="new-plan-features" class="form-control" placeholder="24/7 Access, 10 Meeting Hours, Cafe Credits">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('add-membership-plan-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAddMembershipPlan()">Save Membership Plan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/membership.js"></script>
+</body>
+</html>

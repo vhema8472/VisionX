@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Overview - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="showToast('Help Center available at support@workhub.com', 'info'); return false;">
+          <span class="nav-icon">❓</span>
+          <span>Support</span>
+        </a>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+    
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Navigation">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Global search users, desks, invoices...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')" title="Notifications">
+            🔔
+            <span class="badge-dot"></span>
+          </button>
+          <button class="header-action-btn" onclick="showToast('WorkHub Admin Manual v2.4', 'info')" title="Help & Docs">❓</button>
+          <button class="header-action-btn" onclick="showToast('Switching Workspace Module', 'info')" title="Apps Menu">🎛️</button>
+
+          <!-- Profile Menu -->
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+              <span style="font-size:0.75rem; color:var(--text-muted);">▼</span>
+            </div>
+
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">👤 View Profile</a>
+              <a href="settings.html" class="dropdown-item">⚙️ Account Settings</a>
+              <a href="#" class="dropdown-item" onclick="showToast('Switched to Demo Workspace 2', 'info')">🔄 Switch Workspace</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <!-- Page Title Banner -->
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">Dashboard Overview</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Real-time metrics, revenue trends & workspace utilization.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-secondary" onclick="window.location.reload();">🔄 Refresh Data</button>
+            <button class="btn btn-primary" onclick="openModal('quick-booking-modal')">+ Quick Reserve</button>
+          </div>
+        </div>
+
+        <!-- METRICS CARDS GRID -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Total Users</span>
+              <span class="metric-value" id="stat-total-users">0</span>
+              <span class="metric-change positive">↑ 12% vs last month</span>
+            </div>
+            <div class="metric-icon-box icon-blue">👥</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Active Members</span>
+              <span class="metric-value" id="stat-active-members">0</span>
+              <span class="metric-change positive">↑ 8% growth</span>
+            </div>
+            <div class="metric-icon-box icon-green">👑</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Monthly Revenue</span>
+              <span class="metric-value" id="stat-monthly-revenue">$0.00</span>
+              <span class="metric-change positive">↑ 18.5% YoY</span>
+            </div>
+            <div class="metric-icon-box icon-amber">💰</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Today's Bookings</span>
+              <span class="metric-value" id="stat-todays-bookings">0</span>
+              <span class="metric-change positive">High demand</span>
+            </div>
+            <div class="metric-icon-box icon-cyan">📅</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Available Desks</span>
+              <span class="metric-value" id="stat-available-desks">0</span>
+              <span class="metric-change positive">Ready for check-in</span>
+            </div>
+            <div class="metric-icon-box icon-green">💻</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Occupied Desks</span>
+              <span class="metric-value" id="stat-occupied-desks">0</span>
+              <span class="metric-change negative">Active sessions</span>
+            </div>
+            <div class="metric-icon-box icon-amber">🖥️</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Reserved Today</span>
+              <span class="metric-value" id="stat-reserved-today">0</span>
+              <span class="metric-change positive">Upcoming</span>
+            </div>
+            <div class="metric-icon-box icon-red">🔖</div>
+          </div>
+        </div>
+
+        <!-- CHARTS SECTION -->
+        <div class="dashboard-charts-grid">
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Revenue Overview ($)</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Monthly total income generated from workspace services</p>
+              </div>
+              <span class="badge badge-success">Live Updates</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="revenueChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">Weekly Bookings</h3>
+                <p class="text-muted" style="font-size:0.8rem;">Desk & room reservations trend</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="bookingChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- WIDGETS & TABLES SECTION -->
+        <div class="flex flex-col gap-6" style="margin-bottom: 1.75rem;">
+          <!-- Recent Bookings Table (Full Width) -->
+          <div class="table-card">
+            <div class="table-header-toolbar">
+              <div class="table-title-group">
+                <h3>Recent Bookings</h3>
+                <p>Latest workspace reservations</p>
+              </div>
+              <a href="desks.html" class="btn btn-secondary btn-sm">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>Arrival Time</th>
+                    <th>Date</th>
+                    <th>Duration</th>
+                    <th>Workspace Type</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-bookings-tbody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Latest Payments Table (Full Width) -->
+          <div class="table-card">
+            <div class="table-header-toolbar">
+              <div class="table-title-group">
+                <h3>Latest Payments</h3>
+                <p>Recent invoice activity</p>
+              </div>
+              <a href="payments.html" class="btn btn-secondary btn-sm">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-payments-tbody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM WIDGETS GRID -->
+        <div class="dashboard-tables-grid">
+          <!-- Interactive Calendar Widget -->
+          <div class="card calendar-card">
+            <div class="calendar-header">
+              <span>August 2026</span>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Previous month', 'info')">❮</button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Next month', 'info')">❯</button>
+              </div>
+            </div>
+            <div class="calendar-grid" id="mini-calendar-grid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Quick Actions Grid -->
+          <div class="card">
+            <h3 class="chart-title" style="margin-bottom:1rem;">Quick Workspace Actions</h3>
+            <div class="quick-actions-grid">
+              <button class="quick-action-btn" onclick="openModal('quick-booking-modal')">
+                <span class="quick-action-icon">➕</span>
+                <span>New Booking</span>
+              </button>
+              <button class="quick-action-btn" onclick="window.location.href='users.html'">
+                <span class="quick-action-icon">👤</span>
+                <span>Add User</span>
+              </button>
+              <button class="quick-action-btn" onclick="window.location.href='payments.html'">
+                <span class="quick-action-icon">🧾</span>
+                <span>Create Invoice</span>
+              </button>
+              <button class="quick-action-btn" onclick="window.location.href='reports.html'">
+                <span class="quick-action-icon">📊</span>
+                <span>Export Report</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+          <a href="#">Support</a>
+          <a href="#">API Documentation</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- QUICK BOOKING MODAL -->
+  <div id="quick-booking-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Booking</h3>
+        <button class="modal-close-btn" onclick="closeModal('quick-booking-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">User Name</label>
+          <input type="text" id="qb-customer" class="form-control" placeholder="e.g. Alex Johnson">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Arrival Time</label>
+            <input type="text" id="qb-arrival-time" class="form-control" placeholder="e.g. 09:00 AM">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="qb-date" class="form-control" value="2026-08-01">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Duration</label>
+            <input type="text" id="qb-duration" class="form-control" placeholder="e.g. 4 Hours, Full Day">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Workspace Type</label>
+            <select id="qb-workspace-type" class="form-control">
+              <option value="Dedicated Desk">Dedicated Desk</option>
+              <option value="Hot Desk">Hot Desk</option>
+              <option value="Private Cabin">Private Cabin</option>
+              <option value="Meeting Room">Meeting Room</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('quick-booking-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createNewDashboardBooking()">Confirm Reservation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS MODAL -->
+  <div id="notifications-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Notifications (3)</h3>
+        <button class="modal-close-btn" onclick="closeModal('notifications-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="flex flex-col gap-3">
+          <div class="p-3 border-b" style="border-color:var(--border-color);">
+            <div class="font-semibold" style="font-size:0.9rem;">💳 New Invoice Paid</div>
+            <div class="text-muted" style="font-size:0.8rem;">Alex Johnson paid $450.00 for Cabin A.</div>
+            <div class="text-muted" style="font-size:0.72rem; margin-top:4px;">10 mins ago</div>
+          </div>
+          <div class="p-3 border-b" style="border-color:var(--border-color);">
+            <div class="font-semibold" style="font-size:0.9rem;">⚠️ Desk Maintenance Alert</div>
+            <div class="text-muted" style="font-size:0.8rem;">Cabin B scheduled for maintenance.</div>
+            <div class="text-muted" style="font-size:0.72rem; margin-top:4px;">1 hour ago</div>
+          </div>
+          <div class="p-3">
+            <div class="font-semibold" style="font-size:0.9rem;">👤 New Member Registration</div>
+            <div class="text-muted" style="font-size:0.8rem;">Sophia Taylor signed up for VIP Membership.</div>
+            <div class="text-muted" style="font-size:0.72rem; margin-top:4px;">2 hours ago</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('notifications-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS INCLUDES -->
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

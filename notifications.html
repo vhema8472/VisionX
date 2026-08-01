@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | WorkHub</title>
+  <meta name="description" content="Stay updated with your latest desk bookings, payment receipts, and workspace alerts.">
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    .notif-container { max-width: 800px; margin: 3rem auto 5rem; padding: 0 1.5rem; }
+    .notif-card { background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; display: flex; gap: 1rem; align-items: flex-start; transition: var(--transition); }
+    .notif-card:hover { box-shadow: var(--shadow-sm); }
+    .notif-card.unread { border-left: 4px solid var(--primary); background: #F8FAFC; }
+    .notif-icon { width: 42px; height: 42px; border-radius: 50%; background: #EBF3FF; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">W</span>
+        WorkHub
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="membership.html" class="nav-link">Memberships</a></li>
+          <li><a href="workspace.html" class="nav-link">Workspaces</a></li>
+          <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
+        <a href="profile.html" class="user-profile-btn">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sarah Jenkins" class="avatar-sm">
+        </a>
+        <button class="mobile-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="notif-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Notifications</h1>
+      <button class="btn btn-secondary btn-sm" onclick="showToast('All notifications marked as read', 'success');">Mark all as read</button>
+    </div>
+
+    <div class="notif-card unread">
+      <div class="notif-icon">🎉</div>
+      <div style="flex:1;">
+        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">Booking Confirmed!</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">Your booking for Business Plan Membership (BK20260731-8F4K) is active.</div>
+        <div style="font-size: 0.75rem; color: var(--text-light);">10 mins ago</div>
+      </div>
+    </div>
+
+    <div class="notif-card unread">
+      <div class="notif-icon">💳</div>
+      <div style="flex:1;">
+        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">Payment Receipt Issued</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">Receipt for invoice #INV-2026-88329 ($74.00) is ready for download.</div>
+        <div style="font-size: 0.75rem; color: var(--text-light);">12 mins ago</div>
+      </div>
+    </div>
+
+    <div class="notif-card">
+      <div class="notif-icon">🏷️</div>
+      <div style="flex:1;">
+        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">Special Offer</div>
+        <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">Enjoy 20% discount on meeting rooms with promo code WORKHUB20.</div>
+        <div style="font-size: 0.75rem; color: var(--text-light);">1 day ago</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">W</span>
+          WorkHub
+        </a>
+        <p>Revolutionizing the way professionals connect with their physical workspace. Reliable, flexible, and premium.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="workspace.html">Hot Desks</a></li>
+          <li><a href="workspace.html">Meeting Rooms</a></li>
+          <li><a href="workspace.html">Private Suites</a></li>
+          <li><a href="membership.html">Enterprise Solutions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="contact.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Sustainability</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Newsletter</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #94A3B8;">Stay updated with new locations and offers.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="btn btn-teal btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 WorkHub. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms of Service</a>
+        <a href="contact.html">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

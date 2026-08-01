@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="showToast('Help Center available', 'info'); return false;">
+          <span class="nav-icon">❓</span>
+          <span>Support</span>
+        </a>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" placeholder="Search users...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="openModal('notifications-modal')">🔔</button>
+          <!-- Profile Menu -->
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+              <span style="font-size:0.75rem; color:var(--text-muted);">▼</span>
+            </div>
+
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">👤 Profile</a>
+              <a href="settings.html" class="dropdown-item">⚙️ Settings</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <div class="flex justify-between items-center" style="margin-bottom:1.75rem;">
+          <div>
+            <h1 class="font-bold" style="font-size:1.6rem; letter-spacing:-0.5px;">User Management</h1>
+            <p class="text-muted" style="font-size:0.88rem;">Manage customer accounts, admin roles, and subscription status.</p>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-secondary" id="btn-export-users-csv">📥 Export CSV</button>
+            <button class="btn btn-primary" onclick="openModal('add-user-modal')">+ Add User</button>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Total Users</span>
+              <span class="metric-value" id="metric-total-users">0</span>
+            </div>
+            <div class="metric-icon-box icon-blue">👥</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">New Users</span>
+              <span class="metric-value" id="metric-new-users">0</span>
+            </div>
+            <div class="metric-icon-box icon-green">✨</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Premium Users</span>
+              <span class="metric-value" id="metric-premium-users">0</span>
+            </div>
+            <div class="metric-icon-box icon-amber">👑</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-data">
+              <span class="metric-label">Inactive Users</span>
+              <span class="metric-value" id="metric-inactive-users">0</span>
+            </div>
+            <div class="metric-icon-box icon-red">⚠️</div>
+          </div>
+        </div>
+
+        <!-- USERS TABLE CARD -->
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div class="table-title-group">
+              <h3>User Directory</h3>
+              <p>Filter, search, and manage accounts</p>
+            </div>
+            <div class="table-actions-group">
+              <input type="text" id="user-search-input" class="table-search-input" placeholder="Search by name, email...">
+              <select id="user-role-filter" class="table-filter-select">
+                <option value="ALL">All Roles</option>
+                <option value="Member">Member</option>
+                <option value="Admin">Admin</option>
+              </select>
+              <select id="user-status-filter" class="table-filter-select">
+                <option value="ALL">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th onclick="sortUserColumn('name')">User</th>
+                  <th onclick="sortUserColumn('email')">Email</th>
+                  <th>Phone</th>
+                  <th>Role</th>
+                  <th>Membership</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination">
+            <div id="user-table-info">Showing users...</div>
+            <div class="pagination-controls" id="user-pagination-controls">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>© 2026 WorkHub Workspace Management System.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+          <a href="#">Support</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="add-user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New User</h3>
+        <button class="modal-close-btn" onclick="closeModal('add-user-modal')">✕</button>
+      </div>
+      <form id="add-user-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="add-user-name" class="form-control" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="add-user-email" class="form-control" required placeholder="john.doe@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" id="add-user-phone" class="form-control" required placeholder="+1 555-0199">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select id="add-user-role" class="form-control">
+                <option value="Member">Member</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Membership Tier</label>
+              <select id="add-user-plan" class="form-control">
+                <option value="Basic">Basic</option>
+                <option value="Professional" selected>Professional</option>
+                <option value="Enterprise">Enterprise</option>
+                <option value="VIP">VIP</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('add-user-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT USER MODAL -->
+  <div id="edit-user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit User Details</h3>
+        <button class="modal-close-btn" onclick="closeModal('edit-user-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-user-id">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="edit-user-name" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="edit-user-email" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="text" id="edit-user-phone" class="form-control">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select id="edit-user-role" class="form-control">
+              <option value="Member">Member</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plan</label>
+            <select id="edit-user-plan" class="form-control">
+              <option value="Basic">Basic</option>
+              <option value="Professional">Professional</option>
+              <option value="Enterprise">Enterprise</option>
+              <option value="VIP">VIP</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="edit-user-status" class="form-control">
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('edit-user-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditedUser()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div id="delete-user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete User</h3>
+        <button class="modal-close-btn" onclick="closeModal('delete-user-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently delete this user? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('delete-user-modal')">Cancel</button>
+        <button class="btn btn-danger" onclick="executeDeleteUser()">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/users.js"></script>
+</body>
+</html>
