@@ -414,6 +414,41 @@ const API = {
     }
   },
 
+  async adminLogin(email, pin) {
+    if (!email || !pin) throw new Error('Admin email and Secret PIN required');
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pin })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          sessionStorage.setItem('token', data.token);
+        }
+        if (data.user) {
+          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        }
+        return data;
+      } else {
+        throw new Error(data.message || 'Invalid admin credentials.');
+      }
+    } catch (err) {
+      if (err.message && !err.message.includes('fetch')) throw err;
+      if (email === 'admin@workhub.com' && String(pin) === '889900') {
+        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+        const adminUser = { id: 'USR-ADMIN', userId: 'USR-ADMIN', name: 'WorkHub Admin', email, role: 'admin' };
+        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(adminUser));
+        return { success: true, user: adminUser, message: 'Admin authentication successful!' };
+      }
+      throw new Error('Invalid admin credentials.');
+    }
+  },
+
   async registerUser(userData) {
     try {
       const res = await fetch('http://localhost:5000/api/auth/register', {

@@ -5,9 +5,89 @@
 document.addEventListener('DOMContentLoaded', () => {
   initPasswordToggle();
   initLoginForm();
+  initAdminLoginForm();
   initRegisterForm();
   initGoogleSignInButton();
+  initAuthTabSwitching();
 });
+
+// Tab Switcher between Member Login and Admin Portal
+function initAuthTabSwitching() {
+  const userBtn = document.getElementById('tab-user-btn');
+  const adminBtn = document.getElementById('tab-admin-btn');
+  const userForm = document.getElementById('login-form');
+  const adminForm = document.getElementById('admin-login-form');
+  const socialSection = document.getElementById('social-auth-section');
+
+  if (userBtn && adminBtn) {
+    userBtn.addEventListener('click', () => {
+      userBtn.classList.add('active');
+      userBtn.style.background = '#ffffff';
+      userBtn.style.color = '#111827';
+      userBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+      adminBtn.classList.remove('active');
+      adminBtn.style.background = 'transparent';
+      adminBtn.style.color = '#6B7280';
+      adminBtn.style.boxShadow = 'none';
+
+      if (userForm) userForm.style.display = 'block';
+      if (adminForm) adminForm.style.display = 'none';
+      if (socialSection) socialSection.style.display = 'block';
+    });
+
+    adminBtn.addEventListener('click', () => {
+      adminBtn.classList.add('active');
+      adminBtn.style.background = '#111827';
+      adminBtn.style.color = '#ffffff';
+      adminBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+      userBtn.classList.remove('active');
+      userBtn.style.background = 'transparent';
+      userBtn.style.color = '#6B7280';
+      userBtn.style.boxShadow = 'none';
+
+      if (userForm) userForm.style.display = 'none';
+      if (adminForm) adminForm.style.display = 'block';
+      if (socialSection) socialSection.style.display = 'none';
+    });
+  }
+}
+
+// Admin Secret PIN Login Submit
+function initAdminLoginForm() {
+  const adminForm = document.getElementById('admin-login-form');
+  if (adminForm) {
+    adminForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('admin-login-email').value.trim();
+      const pin = document.getElementById('admin-login-pin').value.trim();
+
+      if (!email || !pin) {
+        showToast('Please enter both Admin Email and Secret PIN.', 'error');
+        return;
+      }
+
+      showLoading();
+
+      try {
+        const response = await API.adminLogin(email, pin);
+        if (response.success) {
+          showToast('Admin authentication successful! Accessing portal...', 'success');
+          setTimeout(() => {
+            window.location.href = 'WorkHub-Admin/dashboard.html';
+          }, 800);
+        } else {
+          showToast(response.message || 'Invalid admin credentials.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message || 'Invalid admin credentials.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+}
 
 // Password Show / Hide Toggle
 function initPasswordToggle() {

@@ -26,6 +26,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    pinHash: {
+      type: String,
+      default: ''
+    },
     googleId: {
       type: String,
       default: ''

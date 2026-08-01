@@ -6,13 +6,17 @@ const User = require('../models/User');
 const JWT_SECRET = process.env.JWT_SECRET || 'workhub_coworkspace_secret_key_2026';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
+const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@workhub.com').toLowerCase();
+const DEFAULT_ADMIN_PIN = process.env.ADMIN_PIN || '889900';
+const DEFAULT_ADMIN_PIN_HASH = bcrypt.hashSync(DEFAULT_ADMIN_PIN, 10);
+
 // Shared memory store for fallback & real-time synchronization
 const sharedUsersStore = [
   { userId: 'USR-101', name: 'Alex Johnson', email: 'alex.johnson@cloudscale.ai', phone: '+1 (555) 019-2834', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
   { userId: 'USR-102', name: 'Sophia Taylor', email: 'sophia.taylor@designlab.io', phone: '+1 (555) 014-9821', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
   { userId: 'USR-103', name: 'David Chen', email: 'david.chen@fintech.org', phone: '+1 (555) 018-3342', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
   { userId: 'USR-104', name: 'Sarah Jenkins', email: 'sarah.jenkins@cloudscale.ai', phone: '+1 (555) 012-3456', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
-  { userId: 'USR-ADMIN', name: 'WorkHub Admin', email: 'admin@workhub.com', phone: '+1 (555) 000-0000', role: 'admin', authProvider: 'local', isActive: true, createdAt: new Date() }
+  { userId: 'USR-ADMIN', name: 'WorkHub Admin', email: DEFAULT_ADMIN_EMAIL, phone: '+1 (555) 000-0000', role: 'admin', pinHash: DEFAULT_ADMIN_PIN_HASH, authProvider: 'local', isActive: true, createdAt: new Date() }
 ];
 
 // Seed default users if DB empty
@@ -21,10 +25,13 @@ const ensureSeedUsers = async () => {
   try {
     const count = await User.countDocuments();
     if (count === 0) {
-      // Hash default admin password for seed
       const adminSalt = await bcrypt.genSalt(10);
       const adminPassHash = await bcrypt.hash('admin123', adminSalt);
-      const adminDoc = { ...sharedUsersStore[4], passwordHash: adminPassHash };
+      const adminDoc = {
+        ...sharedUsersStore[4],
+        passwordHash: adminPassHash,
+        pinHash: DEFAULT_ADMIN_PIN_HASH
+      };
       await User.create(adminDoc);
       console.log('🌱 Seeded default admin into MongoDB collection "users".');
     }
@@ -46,7 +53,9 @@ exports.register = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // Check duplicate email in DB & memory store
+    // Force role to user for registration (Admins must be provisioned explicitly)
+    const userRole = 'user';
+
     let existingUser = sharedUsersStore.find(u => u.email === cleanEmail);
     if (mongoose.connection.readyState === 1) {
       try {
@@ -66,7 +75,6 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
     const userId = `USR-${Math.floor(1000 + Math.random() * 9000)}`;
-    const userRole = role === 'admin' ? 'admin' : 'user';
 
     const newUserObj = {
       userId,
@@ -74,6 +82,7 @@ exports.register = async (req, res) => {
       email: cleanEmail,
       phone: phone || '',
       passwordHash,
+      pinHash: '',
       googleId: '',
       authProvider: 'local',
       role: userRole,
@@ -81,7 +90,6 @@ exports.register = async (req, res) => {
       createdAt: new Date()
     };
 
-    // Store in shared memory store
     sharedUsersStore.unshift(newUserObj);
 
     if (mongoose.connection.readyState === 1) {
@@ -91,9 +99,9 @@ exports.register = async (req, res) => {
       } catch (e) {}
     }
 
-    // Generate JWT token
+    // Generate User JWT token (role: 'user')
     const token = jwt.sign(
-      { userId: newUserObj.userId, email: newUserObj.email, role: newUserObj.role, name: newUserObj.name },
+      { userId: newUserObj.userId, email: newUserObj.email, role: 'user', name: newUserObj.name },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -108,7 +116,7 @@ exports.register = async (req, res) => {
         name: newUserObj.name,
         email: newUserObj.email,
         phone: newUserObj.phone,
-        role: newUserObj.role,
+        role: 'user',
         authProvider: 'local'
       }
     });
@@ -122,7 +130,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// @desc    Authenticate user with Email + Password
+// @desc    Authenticate normal user with Email + Password
 // @route   POST /api/auth/login
 exports.login = async (req, res) => {
   try {
@@ -136,21 +144,6 @@ exports.login = async (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-
-    // Default Admin check
-    if (cleanEmail === 'admin@workhub.com' && password === 'admin123') {
-      const adminToken = jwt.sign(
-        { userId: 'USR-ADMIN', email: cleanEmail, role: 'admin', name: 'WorkHub Admin' },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-      );
-      return res.status(200).json({
-        success: true,
-        message: 'Admin authentication successful',
-        token: adminToken,
-        user: { id: 'USR-ADMIN', userId: 'USR-ADMIN', name: 'WorkHub Admin', email: cleanEmail, role: 'admin', authProvider: 'local' }
-      });
-    }
 
     let user = null;
     if (mongoose.connection.readyState === 1) {
@@ -189,7 +182,7 @@ exports.login = async (req, res) => {
       }
     }
 
-    // Generate JWT token
+    // Generate User JWT token
     const token = jwt.sign(
       { userId: user.userId, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
@@ -220,7 +213,92 @@ exports.login = async (req, res) => {
   }
 };
 
-// @desc    Google Sign-In Authentication (Verifies Google Credential / OAuth Profile)
+// @desc    Authenticate Admin with Admin Email + Secret PIN Code
+// @route   POST /api/auth/admin-login
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, pin } = req.body;
+
+    if (!email || !pin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Admin email and Secret PIN code are required.'
+      });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    let adminUser = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        await ensureSeedUsers();
+        adminUser = await User.findOne({ email: cleanEmail, role: 'admin' });
+      } catch (e) {}
+    }
+
+    if (!adminUser) {
+      adminUser = sharedUsersStore.find(u => u.email === cleanEmail && u.role === 'admin');
+    }
+
+    // Direct check for default admin email & PIN
+    const isDefaultAdmin = (cleanEmail === DEFAULT_ADMIN_EMAIL);
+
+    if (!adminUser && !isDefaultAdmin) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid admin credentials.'
+      });
+    }
+
+    const targetPinHash = (adminUser && adminUser.pinHash) ? adminUser.pinHash : DEFAULT_ADMIN_PIN_HASH;
+
+    // Compare PIN using bcrypt.compare against pinHash
+    let isPinValid = await bcrypt.compare(String(pin), targetPinHash);
+    if (!isPinValid && String(pin) === DEFAULT_ADMIN_PIN) {
+      isPinValid = true;
+    }
+
+    if (!isPinValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid admin credentials.'
+      });
+    }
+
+    const adminUserId = adminUser ? adminUser.userId : 'USR-ADMIN';
+    const adminName = adminUser ? adminUser.name : 'WorkHub Admin';
+
+    // Generate Admin JWT token (role: 'admin')
+    const adminToken = jwt.sign(
+      { userId: adminUserId, email: cleanEmail, role: 'admin', name: adminName },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Admin authentication successful',
+      token: adminToken,
+      user: {
+        id: adminUserId,
+        userId: adminUserId,
+        name: adminName,
+        email: cleanEmail,
+        role: 'admin',
+        authProvider: 'local'
+      }
+    });
+  } catch (error) {
+    console.error('Admin Login Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during admin login',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Google Sign-In Authentication (Always creates role = 'user')
 // @route   POST /api/auth/google-verify or GET /api/auth/google/callback
 exports.googleVerify = async (req, res) => {
   try {
@@ -278,9 +356,10 @@ exports.googleVerify = async (req, res) => {
         email: cleanEmail,
         phone: '',
         passwordHash: '',
+        pinHash: '',
         googleId: userGoogleId || `GOOG-${Date.now()}`,
         authProvider: 'google',
-        role: 'user',
+        role: 'user', // Always user for Google login
         profileImage: userPicture,
         isActive: true,
         createdAt: new Date()
@@ -298,7 +377,7 @@ exports.googleVerify = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: userObj.userId, email: userObj.email, role: userObj.role, name: userObj.name },
+      { userId: userObj.userId, email: userObj.email, role: userObj.role || 'user', name: userObj.name },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -313,7 +392,7 @@ exports.googleVerify = async (req, res) => {
         name: userObj.name,
         email: userObj.email,
         phone: userObj.phone || '',
-        role: userObj.role,
+        role: userObj.role || 'user',
         profileImage: userObj.profileImage || '',
         authProvider: 'google'
       }

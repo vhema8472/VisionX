@@ -48,6 +48,16 @@
         <p>Log in to access your workspace dashboard.</p>
       </div>
 
+      <div class="auth-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--bg-light, #F3F4F6); padding: 0.3rem; border-radius: 8px;">
+        <button type="button" id="tab-user-btn" class="auth-tab-btn active" style="flex: 1; padding: 0.6rem 1rem; border: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; background: #ffffff; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s;">
+          👤 Member Sign In
+        </button>
+        <button type="button" id="tab-admin-btn" class="auth-tab-btn" style="flex: 1; padding: 0.6rem 1rem; border: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; background: transparent; color: #6B7280; transition: all 0.2s;">
+          🔐 Admin Portal
+        </button>
+      </div>
+
+      <!-- MEMBER LOGIN FORM -->
       <form id="login-form">
         <div class="form-group">
           <label class="form-label">Email Address</label>
@@ -73,19 +83,43 @@
         <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
       </form>
 
-      <div class="auth-divider">OR</div>
+      <!-- ADMIN LOGIN FORM -->
+      <form id="admin-login-form" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Admin Email Address</label>
+          <input type="email" class="form-control" placeholder="admin@workhub.com" id="admin-login-email" value="admin@workhub.com" required>
+        </div>
 
-      <div class="social-auth-grid">
-        <button type="button" class="social-btn google-btn" data-auth="google">
-          🌐 Google
-        </button>
-        <button type="button" class="social-btn" onclick="showToast('Microsoft login initialized', 'success')">
-          💻 Microsoft
-        </button>
-      </div>
+        <div class="form-group">
+          <label class="form-label">Secret PIN Code</label>
+          <div class="password-input-wrapper">
+            <input type="password" class="form-control" placeholder="Enter Secret PIN" id="admin-login-pin" value="889900" required>
+            <button type="button" class="toggle-password-btn" aria-label="Toggle PIN visibility">👁️</button>
+          </div>
+        </div>
 
-      <div class="auth-switch-text">
-        Don't have an account? <a href="register.html">Sign Up</a>
+        <div class="form-options-row">
+          <span style="font-size: 0.85rem; color: #6B7280;">⚠️ Authorized Admin Personnel Only</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: #111827; border-color: #111827;">Authenticate as Admin</button>
+      </form>
+
+      <div id="social-auth-section">
+        <div class="auth-divider">OR</div>
+
+        <div class="social-auth-grid">
+          <button type="button" class="social-btn google-btn" data-auth="google">
+            🌐 Google
+          </button>
+          <button type="button" class="social-btn" onclick="showToast('Microsoft login initialized', 'success')">
+            💻 Microsoft
+          </button>
+        </div>
+
+        <div class="auth-switch-text">
+          Don't have an account? <a href="register.html">Sign Up</a>
+        </div>
       </div>
     </div>
   </main>
