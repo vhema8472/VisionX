@@ -14,8 +14,10 @@ const authenticateUser = async (req, res, next) => {
     }
 
     if (!token) {
-      req.user = { userId: 'USR-GUEST', name: 'Guest User', role: 'user', email: 'guest@workhub.io' };
-      return next();
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Access token missing.'
+      });
     }
 
     const secret = process.env.JWT_SECRET || 'workhub_coworkspace_secret_key_2026';

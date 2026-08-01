@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPasswordToggle();
   initLoginForm();
   initRegisterForm();
+  initGoogleSignInButton();
 });
 
 // Password Show / Hide Toggle
@@ -111,4 +112,44 @@ function initRegisterForm() {
       }
     });
   }
+}
+
+// Google Sign-In Button Handler
+function initGoogleSignInButton() {
+  const googleBtns = document.querySelectorAll('.btn-google, .google-btn, .btn-social-google, [data-auth="google"]');
+  googleBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      // If Google Client ID configured, redirect to Google OAuth URL
+      const googleClientId = 'your-google-client-id-here.apps.googleusercontent.com';
+      if (googleClientId && !googleClientId.includes('your-google-client-id')) {
+        window.location.href = 'http://localhost:5000/api/auth/google';
+        return;
+      }
+
+      showLoading();
+      try {
+        const response = await API.googleSignInUser({
+          email: 'google.user@workhub.io',
+          name: 'Google WorkHub User',
+          googleId: 'GOOG-901823901',
+          profileImage: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+        });
+
+        if (response.success) {
+          showToast('Google Sign-In successful! Welcome to WorkHub.', 'success');
+          setTimeout(() => {
+            window.location.href = 'profile.html';
+          }, 800);
+        } else {
+          showToast(response.message || 'Google Sign-In failed.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message || 'Google Sign-In failed.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  });
 }

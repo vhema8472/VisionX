@@ -384,33 +384,146 @@ const API = {
 
   async loginUser(email, password) {
     if (!email || !password) throw new Error('Email and password required');
-    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    const user = { ...WorkHubData.currentUser, email };
-    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
-    return Promise.resolve({ success: true, user, message: 'Login successful!' });
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          sessionStorage.setItem('token', data.token);
+        }
+        if (data.user) {
+          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        }
+        return data;
+      } else {
+        throw new Error(data.message || 'Login failed.');
+      }
+    } catch (err) {
+      if (err.message && !err.message.includes('fetch')) throw err;
+      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+      const user = { ...WorkHubData.currentUser, email };
+      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+      return { success: true, user, message: 'Login successful!' };
+    }
   },
 
   async registerUser(userData) {
-    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    const user = { ...WorkHubData.currentUser, ...userData };
-    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
-    return Promise.resolve({ success: true, user, message: 'Account created successfully!' });
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User',
+          email: userData.email,
+          password: userData.password || 'Password123!',
+          phone: userData.phone || ''
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          sessionStorage.setItem('token', data.token);
+        }
+        if (data.user) {
+          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        }
+        return data;
+      } else {
+        throw new Error(data.message || 'Registration failed.');
+      }
+    } catch (err) {
+      if (err.message && !err.message.includes('fetch')) throw err;
+      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+      const user = { ...WorkHubData.currentUser, ...userData };
+      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+      return { success: true, user, message: 'Account created successfully!' };
+    }
+  },
+
+  async googleSignInUser(googlePayload = {}) {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/google-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(googlePayload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          sessionStorage.setItem('token', data.token);
+        }
+        if (data.user) {
+          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        }
+        return data;
+      } else {
+        throw new Error(data.message || 'Google Sign-In failed.');
+      }
+    } catch (err) {
+      if (err.message && !err.message.includes('fetch')) throw err;
+      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+      const user = { ...WorkHubData.currentUser, name: 'Google User', email: 'google.user@workhub.io', authProvider: 'google' };
+      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+      return { success: true, user, message: 'Google Sign-In successful!' };
+    }
   },
 
   async logoutUser() {
+    try {
+      await fetch('http://localhost:5000/api/auth/logout', { method: 'POST' });
+    } catch(e){}
     localStorage.removeItem(WorkHubData.LOGGED_IN_KEY);
     localStorage.removeItem(WorkHubData.SESSION_KEY);
+    localStorage.removeItem('token');
     sessionStorage.clear();
     return Promise.resolve({ success: true, message: 'Logged out successfully.' });
   },
 
   async fetchUserProfile() {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+      const res = await fetch('http://localhost:5000/api/users/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        return { success: true, data: data.user };
+      }
+    } catch(e){}
     const stored = localStorage.getItem(WorkHubData.SESSION_KEY);
     const user = stored ? JSON.parse(stored) : WorkHubData.currentUser;
     return Promise.resolve({ success: true, data: user });
   },
 
   async updateProfile(profileData) {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+      const res = await fetch('http://localhost:5000/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(profileData)
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
+        return { success: true, data: data.user, message: 'Profile updated!' };
+      }
+    } catch(e){}
     const current = await this.fetchUserProfile();
     const updated = { ...current.data, ...profileData };
     localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(updated));

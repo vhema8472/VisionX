@@ -100,7 +100,10 @@ async function loadRecentTables() {
 
   // Fetch live bookings from Node.js + Express + MongoDB API
   try {
-    const res = await fetch('http://localhost:5000/api/admin/recent-bookings');
+    const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    const res = await fetch('http://localhost:5000/api/admin/recent-bookings', {
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
     const data = await res.json();
     if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
       bookings = data.bookings.map(b => ({
