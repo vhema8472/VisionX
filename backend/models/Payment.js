@@ -46,4 +46,9 @@ const PaymentSchema = new mongoose.Schema(
   }
 );
 
+// Performance Compound Indexes
+PaymentSchema.index({ createdAt: -1 });
+PaymentSchema.index({ status: 1 });
+PaymentSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Payment', PaymentSchema);

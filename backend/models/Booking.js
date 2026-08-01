@@ -92,4 +92,10 @@ const BookingSchema = new mongoose.Schema(
   }
 );
 
+// Performance Compound Indexes
+BookingSchema.index({ createdAt: -1 });
+BookingSchema.index({ date: 1, bookingStatus: 1 });
+BookingSchema.index({ workspaceId: 1, date: 1 });
+BookingSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Booking', BookingSchema);
