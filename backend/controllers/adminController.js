@@ -13,7 +13,7 @@ const fetchFallbackBookings = () => {
   return [];
 };
 
-// @desc    Get dashboard aggregate statistics (Optimized with Promise.all aggregation)
+// @desc    Get dashboard aggregate statistics
 // @route   GET /api/admin/dashboard/stats or /api/admin/stats
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -29,30 +29,14 @@ exports.getDashboardStats = async (req, res) => {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
         if (ensureSeedPayments) await ensureSeedPayments();
+        dbUserCount = await User.countDocuments();
+        dbBookingCount = await Booking.countDocuments();
+        todaysBookingCount = await Booking.countDocuments({ date: todayStr });
+        pendingBookingCount = await Booking.countDocuments({ bookingStatus: 'pending' });
+        confirmedBookingCount = await Booking.countDocuments({ bookingStatus: 'confirmed' });
 
-        // Parallel MongoDB Aggregation / Document Counts
-        const [
-          userCount,
-          bookingCount,
-          todaysCount,
-          pendingCount,
-          confirmedCount,
-          paidPayments
-        ] = await Promise.all([
-          User.countDocuments(),
-          Booking.countDocuments(),
-          Booking.countDocuments({ date: todayStr }),
-          Booking.countDocuments({ bookingStatus: 'pending' }),
-          Booking.countDocuments({ bookingStatus: 'confirmed' }),
-          Payment.find({ status: 'paid' }).select('amount')
-        ]);
-
-        dbUserCount = userCount;
-        dbBookingCount = bookingCount;
-        todaysBookingCount = todaysCount;
-        pendingBookingCount = pendingCount;
-        confirmedBookingCount = confirmedCount;
-        calculatedRevenue = paidPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const payments = await Payment.find({ status: 'paid' });
+        calculatedRevenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
       } catch (e) {}
     }
 
@@ -90,12 +74,11 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
-// @desc    Get all admin bookings (with status & limit filter)
+// @desc    Get all admin bookings (with status filter)
 // @route   GET /api/admin/bookings
 exports.getAdminBookings = async (req, res) => {
   try {
-    const { status, limit } = req.query;
-    const limitVal = parseInt(limit, 10) || 0;
+    const { status } = req.query;
     let query = {};
     if (status) {
       query.bookingStatus = status;
@@ -105,11 +88,7 @@ exports.getAdminBookings = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
-        let mQuery = Booking.find(query)
-          .select('bookingId userName userEmail arrivalTime startTime endTime date duration workspaceType workspaceName bookingStatus createdAt')
-          .sort({ createdAt: -1 });
-        if (limitVal > 0) mQuery = mQuery.limit(limitVal);
-        bookings = await mQuery;
+        bookings = await Booking.find(query).sort({ createdAt: -1 });
       } catch (e) {}
     }
 
@@ -117,9 +96,6 @@ exports.getAdminBookings = async (req, res) => {
       bookings = fetchFallbackBookings();
       if (status) {
         bookings = bookings.filter(b => b.bookingStatus === status);
-      }
-      if (limitVal > 0) {
-        bookings = bookings.slice(0, limitVal);
       }
     }
 
@@ -134,24 +110,20 @@ exports.getAdminBookings = async (req, res) => {
   }
 };
 
-// @desc    Get recent bookings sorted by createdAt DESC (Optimized with projection & limit 5)
+// @desc    Get recent bookings sorted by createdAt DESC
 // @route   GET /api/admin/bookings/recent or /api/admin/recent-bookings
 exports.getRecentBookings = async (req, res) => {
   try {
-    const limitVal = parseInt(req.query.limit, 10) || 5;
     let bookings = [];
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
-        bookings = await Booking.find()
-          .select('bookingId userName userEmail arrivalTime startTime endTime date duration workspaceType workspaceName bookingStatus createdAt')
-          .sort({ createdAt: -1 })
-          .limit(limitVal);
+        bookings = await Booking.find().sort({ createdAt: -1 }).limit(10);
       } catch (e) {}
     }
 
     if (!bookings || bookings.length === 0) {
-      bookings = fetchFallbackBookings().slice(0, limitVal);
+      bookings = fetchFallbackBookings();
     }
 
     return res.status(200).json({
@@ -165,19 +137,15 @@ exports.getRecentBookings = async (req, res) => {
   }
 };
 
-// @desc    Get latest payment transactions (Optimized with projection & limit 5)
+// @desc    Get latest payment transactions
 // @route   GET /api/admin/payments/recent
 exports.getLatestPayments = async (req, res) => {
   try {
-    const limitVal = parseInt(req.query.limit, 10) || 5;
     let payments = [];
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedPayments) await ensureSeedPayments();
-        payments = await Payment.find()
-          .select('paymentId bookingId userId userName amount paymentMethod status createdAt')
-          .sort({ createdAt: -1 })
-          .limit(limitVal);
+        payments = await Payment.find().sort({ createdAt: -1 }).limit(10);
       } catch (e) {}
     }
 
@@ -186,7 +154,7 @@ exports.getLatestPayments = async (req, res) => {
         { paymentId: 'PAY-1001', bookingId: 'BK-9901', userId: 'USR-101', userName: 'Alex Johnson', amount: '$220.00', paymentMethod: 'Credit Card', status: 'paid', createdAt: new Date() },
         { paymentId: 'PAY-1002', bookingId: 'BK-9902', userId: 'USR-106', userName: 'Sophia Taylor', amount: '$198.00', paymentMethod: 'UPI', status: 'paid', createdAt: new Date() },
         { paymentId: 'PAY-1003', bookingId: 'BK-9903', userId: 'USR-107', userName: 'James Wilson', amount: '$165.00', paymentMethod: 'Netbanking', status: 'paid', createdAt: new Date() }
-      ].slice(0, limitVal);
+      ];
     }
 
     return res.status(200).json({
