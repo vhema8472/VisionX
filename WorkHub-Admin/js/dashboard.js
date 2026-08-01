@@ -1,105 +1,53 @@
 /* ==========================================================================
    WORKHUB ADMIN - DASHBOARD CONTROLLER (dashboard.js)
-   Optimized with Parallel Promise.all Fetches & Staged Non-Blocking UI
    ========================================================================== */
-
-let isPolling = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth(false);
 
-  // Immediate Stage 1: Render layout shell, charts, and calendar
+  // Load KPI Stats
+  loadDashboardKPIs();
+
+  // Render Canvas Charts
   renderDashboardCharts();
+
+  // Render Mini Calendar & Activity Tables
   renderMiniCalendar();
-
-  // Stage 2: Parallel fetch & render for KPIs, Recent Bookings, and Payments
-  loadDashboardDataParallel();
-
-  // Non-overlapping Interval Polling (Every 5 seconds)
-  setInterval(() => {
-    if (!isPolling) {
-      isPolling = true;
-      loadDashboardDataParallel().finally(() => {
-        isPolling = false;
-      });
-    }
-  }, 5000);
+  loadRecentTables();
 });
 
-async function loadDashboardDataParallel() {
-  const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-  const headers = { 'Authorization': `Bearer ${adminToken}` };
+async function loadDashboardKPIs() {
+  let totalUsers = 673;
+  let activeMembers = 132;
+  let availableDesks = 25;
+  let occupiedDesks = 59;
+  let reservedToday = 16;
+  let todaysBookings = 18;
+  let monthlyRevenue = '$18,450.00';
 
-  // Parallel Promise.all Execution
-  return Promise.all([
-    fetch('http://localhost:5000/api/admin/dashboard/stats', { headers }).then(res => res.json()).catch(() => null),
-    fetch('http://localhost:5000/api/admin/recent-bookings?limit=5', { headers }).then(res => res.json()).catch(() => null),
-    fetch('http://localhost:5000/api/admin/payments/recent?limit=5', { headers }).then(res => res.json()).catch(() => null)
-  ]).then(([statsData, bookingsData, paymentsData]) => {
-    // Process Stats
-    if (statsData && statsData.success && statsData.stats) {
-      const s = statsData.stats;
-      setElemText('stat-total-users', s.totalUsers || 673);
-      setElemText('stat-active-members', s.activeMembers || 132);
-      setElemText('stat-monthly-revenue', s.totalRevenue || '$18,450.00');
-      setElemText('stat-todays-bookings', s.todaysBookings || 18);
-      setElemText('stat-available-desks', s.availableDesks || 25);
-      setElemText('stat-occupied-desks', s.occupiedDesks || 59);
-      setElemText('stat-reserved-today', s.reservedDesks || 16);
+  try {
+    const res = await fetch('http://localhost:5000/api/admin/dashboard/stats');
+    const data = await res.json();
+    if (data.success && data.stats) {
+      const s = data.stats;
+      totalUsers = s.totalUsers || 673;
+      activeMembers = s.activeMembers || 132;
+      availableDesks = s.availableDesks || 25;
+      occupiedDesks = s.occupiedDesks || 59;
+      reservedToday = s.reservedDesks || 16;
+      todaysBookings = s.todaysBookings || 18;
+      if (s.totalRevenue) monthlyRevenue = s.totalRevenue;
     }
+  } catch (e) {}
 
-    // Process Bookings Table
-    let bookings = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS);
-    if (bookingsData && bookingsData.success && Array.isArray(bookingsData.bookings) && bookingsData.bookings.length > 0) {
-      bookings = bookingsData.bookings.map(b => ({
-        id: b.bookingId,
-        user: b.userName,
-        arrivalTime: b.arrivalTime || b.startTime || '09:00 AM',
-        date: b.date || b.bookingDate,
-        duration: b.duration,
-        workspaceType: b.workspaceType || b.workspaceName,
-        status: b.bookingStatus
-      }));
-    }
-
-    const bookingTbody = document.getElementById('dashboard-bookings-tbody');
-    if (bookingTbody) {
-      bookingTbody.innerHTML = bookings.slice(0, 5).map(b => `
-        <tr>
-          <td><strong>${b.user}</strong></td>
-          <td>${b.arrivalTime || '09:00 AM'}</td>
-          <td>${b.date}</td>
-          <td>${b.duration}</td>
-          <td><span class="badge badge-info">${b.workspaceType}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    // Process Payments Table
-    let payments = WorkHubStore.get(WorkHubStore.KEYS.INVOICES);
-    if (paymentsData && paymentsData.success && Array.isArray(paymentsData.payments) && paymentsData.payments.length > 0) {
-      payments = paymentsData.payments.map(p => ({
-        id: p.paymentId,
-        customer: p.userName || 'Client',
-        amount: typeof p.amount === 'number' ? `$${p.amount.toFixed(2)}` : p.amount,
-        method: p.paymentMethod || 'Credit Card',
-        status: p.status || 'paid'
-      }));
-    }
-
-    const paymentTbody = document.getElementById('dashboard-payments-tbody');
-    if (paymentTbody) {
-      paymentTbody.innerHTML = payments.slice(0, 5).map(inv => `
-        <tr>
-          <td><strong>${inv.id}</strong></td>
-          <td>${inv.customer}</td>
-          <td><strong>${inv.amount}</strong></td>
-          <td>${inv.method}</td>
-          <td><span class="badge badge-${(inv.status || 'paid').toLowerCase()}">${inv.status}</span></td>
-        </tr>
-      `).join('');
-    }
-  });
+  // Render to DOM elements
+  setElemText('stat-total-users', totalUsers);
+  setElemText('stat-active-members', activeMembers);
+  setElemText('stat-monthly-revenue', monthlyRevenue);
+  setElemText('stat-todays-bookings', todaysBookings);
+  setElemText('stat-available-desks', availableDesks);
+  setElemText('stat-occupied-desks', occupiedDesks);
+  setElemText('stat-reserved-today', reservedToday);
 }
 
 function setElemText(id, val) {
@@ -108,10 +56,12 @@ function setElemText(id, val) {
 }
 
 function renderDashboardCharts() {
+  // Revenue Chart (Monthly)
   const revenueLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
   const revenueData = [12500, 15200, 14800, 18900, 22400, 21000, 26500, 29800];
   WorkHubCharts.renderBarChart('revenueChartCanvas', revenueLabels, revenueData, '#2563EB');
 
+  // Booking Volume Chart (Weekly)
   const bookingLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const bookingData = [45, 62, 78, 85, 92, 54, 38];
   WorkHubCharts.renderBarChart('bookingChartCanvas', bookingLabels, bookingData, '#3B82F6');
@@ -145,6 +95,61 @@ function renderMiniCalendar() {
   }
 }
 
+async function loadRecentTables() {
+  let bookings = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS);
+
+  // Fetch live bookings from Node.js + Express + MongoDB API
+  try {
+    const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    const res = await fetch('http://localhost:5000/api/admin/recent-bookings', {
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
+      bookings = data.bookings.map(b => ({
+        id: b.bookingId,
+        user: b.userName,
+        arrivalTime: b.arrivalTime,
+        date: b.bookingDate,
+        duration: b.duration,
+        workspaceType: b.workspaceType,
+        space: b.workspaceName,
+        status: b.bookingStatus
+      }));
+    }
+  } catch (e) {
+    // Silent fallback to local storage
+  }
+
+  const bookingTbody = document.getElementById('dashboard-bookings-tbody');
+  if (bookingTbody) {
+    bookingTbody.innerHTML = bookings.slice(0, 5).map(b => `
+      <tr>
+        <td><strong>${b.user}</strong></td>
+        <td>${b.arrivalTime || '09:00 AM'}</td>
+        <td>${b.date}</td>
+        <td>${b.duration}</td>
+        <td><span class="badge badge-info">${b.workspaceType || b.space}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // Latest Payments Table
+  const invoices = WorkHubStore.get(WorkHubStore.KEYS.INVOICES);
+  const paymentTbody = document.getElementById('dashboard-payments-tbody');
+  if (paymentTbody) {
+    paymentTbody.innerHTML = invoices.slice(0, 5).map(inv => `
+      <tr>
+        <td><strong>${inv.id}</strong></td>
+        <td>${inv.customer}</td>
+        <td><strong>${inv.amount}</strong></td>
+        <td>${inv.method}</td>
+        <td><span class="badge badge-${inv.status.toLowerCase()}">${inv.status}</span></td>
+      </tr>
+    `).join('');
+  }
+}
+
 async function createNewDashboardBooking() {
   const userName = document.getElementById('qb-customer')?.value.trim() || 'Alex Johnson';
   const arrivalTime = document.getElementById('qb-arrival-time')?.value.trim() || '09:00 AM';
@@ -168,13 +173,9 @@ async function createNewDashboardBooking() {
   };
 
   try {
-    const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
     await fetch('http://localhost:5000/api/bookings', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${adminToken}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newBookingPayload)
     });
   } catch (e) {}
@@ -194,5 +195,5 @@ async function createNewDashboardBooking() {
 
   closeModal('quick-booking-modal');
   showToast('New booking added to Dashboard!', 'success');
-  loadDashboardDataParallel();
+  loadRecentTables();
 }
