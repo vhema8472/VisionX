@@ -26,8 +26,8 @@ async function loadDashboardKPIs() {
   let monthlyRevenue = '$18,450.00';
 
   try {
-    const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-    const res = await fetch('http://localhost:5000/api/admin/dashboard/stats', {
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const res = await fetch(`${apiBase}/api/admin/dashboard/stats`, {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();
@@ -63,7 +63,8 @@ async function renderDashboardCharts() {
 
   // 1. Fetch Real Revenue Overview Data from Backend API
   try {
-    const res = await fetch('http://localhost:5000/api/admin/dashboard/revenue', {
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const res = await fetch(`${apiBase}/api/admin/dashboard/revenue`, {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();
@@ -82,7 +83,7 @@ async function renderDashboardCharts() {
 
   // 2. Fetch Real Weekly Bookings Data from Backend API
   try {
-    const res = await fetch('http://localhost:5000/api/admin/dashboard/weekly-bookings', {
+    const res = await fetch(`${apiBase}/api/admin/dashboard/weekly-bookings`, {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();
@@ -133,11 +134,12 @@ async function loadRecentTables() {
 
   // Concurrently fetch recent bookings and payments
   try {
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
     const [bRes, pRes] = await Promise.all([
-      fetch('http://localhost:5000/api/admin/bookings/recent', {
+      fetch(`${apiBase}/api/admin/bookings/recent`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       }),
-      fetch('http://localhost:5000/api/admin/payments/recent', {
+      fetch(`${apiBase}/api/admin/payments/recent`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       })
     ]);
@@ -226,7 +228,8 @@ async function createNewDashboardBooking() {
   };
 
   try {
-    const res = await fetch('http://localhost:5000/api/admin/bookings', {
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const res = await fetch(`${apiBase}/api/admin/bookings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

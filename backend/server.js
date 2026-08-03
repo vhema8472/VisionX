@@ -6,6 +6,16 @@ const connectDB = require('./config/db');
 // Load Environment Variables
 dotenv.config();
 
+// Ensure mandatory environment variables exist
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'workhub_dev_secret_key_change_in_production';
+  console.warn('⚠️ WARNING: JWT_SECRET environment variable is missing. Using local development secret.');
+}
+if (!process.env.ADMIN_PIN) {
+  process.env.ADMIN_PIN = '889900';
+  console.warn('⚠️ WARNING: ADMIN_PIN environment variable is missing. Using local development PIN.');
+}
+
 // Initialize Express App
 const app = express();
 

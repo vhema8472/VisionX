@@ -198,7 +198,8 @@
 
       try {
         const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-        const res = await fetch('http://localhost:5000/api/payments', {
+        const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+        const res = await fetch(`${apiBase}/api/payments`, {
           headers: { 'Authorization': `Bearer ${adminToken}` }
         });
         const data = await res.json();

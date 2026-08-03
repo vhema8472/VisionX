@@ -226,10 +226,8 @@ function initGoogleSignInButton() {
 
       // If Google Client ID configured, redirect to Google OAuth URL
       const googleClientId = 'your-google-client-id-here.apps.googleusercontent.com';
-      if (googleClientId && !googleClientId.includes('your-google-client-id')) {
-        window.location.href = 'http://localhost:5000/api/auth/google';
-        return;
-      }
+        const apiBase = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+        window.location.href = `${apiBase}/api/auth/google`;
 
       showLoading();
       try {

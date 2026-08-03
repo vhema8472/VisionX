@@ -2,6 +2,15 @@
    WORKHUB - MOCK DATA REPOSITORY & API HANDLERS
    ========================================== */
 
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.VISIONX_API_URL) return window.VISIONX_API_URL;
+  if (typeof window !== 'undefined' && window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000';
+  }
+  return typeof window !== 'undefined' ? window.location.origin : '';
+};
+const API_BASE_URL = getApiBaseUrl();
+
 const WorkHubData = {
   SESSION_KEY: 'workhub_user_session',
   LOGGED_IN_KEY: 'isLoggedIn',
@@ -359,7 +368,7 @@ const API = {
     if (!email || !password) throw new Error('Email and password required');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -390,7 +399,7 @@ const API = {
     if (!email || !pin) throw new Error('Admin email and Secret PIN required');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/admin-login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/admin-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, pin })
@@ -419,7 +428,7 @@ const API = {
 
   async registerUser(userData) {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -445,7 +454,7 @@ const API = {
 
   async googleSignInUser(googlePayload = {}) {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/google-verify', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/google-verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(googlePayload)
@@ -474,7 +483,7 @@ const API = {
 
   async logoutUser() {
     try {
-      await fetch('http://localhost:5000/api/auth/logout', { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
     } catch(e){}
     localStorage.removeItem(WorkHubData.LOGGED_IN_KEY);
     localStorage.removeItem(WorkHubData.SESSION_KEY);
@@ -487,7 +496,7 @@ const API = {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
       if (!token) return { success: false, data: null };
-      const res = await fetch('http://localhost:5000/api/users/profile', {
+      const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -511,7 +520,7 @@ const API = {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
       if (!token) return { success: false, memberships: [] };
-      const res = await fetch('http://localhost:5000/api/users/me/memberships', {
+      const res = await fetch(`${API_BASE_URL}/api/users/me/memberships`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -527,7 +536,7 @@ const API = {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
       if (!token) throw new Error('Authentication token missing.');
 
-      const res = await fetch('http://localhost:5000/api/users/profile', {
+      const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -599,7 +608,7 @@ const API = {
 
   async getWorkspaceAvailability(id, dateStr = "2026-07-31") {
     try {
-      const res = await fetch(`http://localhost:5000/api/workspaces/${id}/availability?date=${dateStr}`);
+      const res = await fetch(`${API_BASE_URL}/api/workspaces/${id}/availability?date=${dateStr}`);
       const data = await res.json();
       if (data.success && data.schedule) {
         return { success: true, date: dateStr, schedule: data.schedule };
@@ -641,7 +650,7 @@ const API = {
     let backendResult = null;
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -688,7 +697,7 @@ const API = {
   async createPayment(paymentPayload) {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const response = await fetch('http://localhost:5000/api/payments/create', {
+      const response = await fetch(`${API_BASE_URL}/api/payments/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -706,7 +715,7 @@ const API = {
   async getBookingHistory() {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const res = await fetch('http://localhost:5000/api/users/me/bookings', {
+      const res = await fetch(`${API_BASE_URL}/api/users/me/bookings`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

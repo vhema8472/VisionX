@@ -20,7 +20,8 @@ async function loadUsersData() {
   usersData = WorkHubStore.get(WorkHubStore.KEYS.USERS);
   const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
   try {
-    const res = await fetch('http://localhost:5000/api/admin/users', {
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const res = await fetch(`${apiBase}/api/admin/users`, {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();

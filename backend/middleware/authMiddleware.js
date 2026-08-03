@@ -20,7 +20,14 @@ const authenticateUser = async (req, res, next) => {
       });
     }
 
-    const secret = process.env.JWT_SECRET || 'workhub_coworkspace_secret_key_2026';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('❌ Security Error: JWT_SECRET environment variable is missing.');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error: JWT_SECRET environment variable is missing.'
+      });
+    }
     const decoded = jwt.verify(token, secret);
     
     let user = null;

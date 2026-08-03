@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadInvoicesData() {
   invoicesData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES);
   try {
-    const res = await fetch('http://localhost:5000/api/admin/payments/recent');
+    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const res = await fetch(`${apiBase}/api/admin/payments/recent`);
     const data = await res.json();
     if (data.success && Array.isArray(data.payments) && data.payments.length > 0) {
       invoicesData = data.payments.map(p => ({

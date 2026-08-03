@@ -126,13 +126,14 @@ function initPaymentConfirmation() {
 
     // Determine active payment method
     const activeTab = document.querySelector('.payment-tab-btn.active, .payment-method-tab.active');
-    const method = activeTab ? (activeTab.getAttribute('data-method') || 'credit') : 'credit';
+    const method = activeTab ? (activeTab.getAttribute('data-method') || 'demogateway') : 'demogateway';
 
-    let paymentMethodLabel = 'Credit Card';
-    if (method === 'credit') paymentMethodLabel = 'Credit Card';
-    else if (method === 'debit') paymentMethodLabel = 'Debit Card';
-    else if (method === 'upi') paymentMethodLabel = 'UPI Payment';
-    else if (method === 'netbank') paymentMethodLabel = 'Net Banking';
+    let paymentMethodLabel = 'Demo Payment Gateway';
+    if (method === 'demogateway') paymentMethodLabel = 'Demo Payment Gateway';
+    else if (method === 'upi') paymentMethodLabel = 'UPI (Demo)';
+    else if (method === 'netbank') paymentMethodLabel = 'Net Banking (Demo)';
+    else if (method === 'wallet') paymentMethodLabel = 'Wallet (Demo)';
+    else if (method === 'cash') paymentMethodLabel = 'Cash at Workspace';
 
     const bookingId = pendingData.bookingId || `BK-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
     const transactionId = `TXN-${Math.floor(100000 + Math.random() * 900000)}`;

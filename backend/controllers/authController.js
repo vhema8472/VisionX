@@ -3,12 +3,12 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'workhub_coworkspace_secret_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@workhub.com').toLowerCase();
-const DEFAULT_ADMIN_PIN = process.env.ADMIN_PIN || '889900';
-const DEFAULT_ADMIN_PIN_HASH = bcrypt.hashSync(DEFAULT_ADMIN_PIN, 10);
+const DEFAULT_ADMIN_PIN = process.env.ADMIN_PIN || '';
+const DEFAULT_ADMIN_PIN_HASH = DEFAULT_ADMIN_PIN ? bcrypt.hashSync(DEFAULT_ADMIN_PIN, 10) : '';
 const DEFAULT_USER_PASS_HASH = bcrypt.hashSync('password123', 10);
 
 // Shared memory store for fallback & real-time synchronization
@@ -230,8 +230,8 @@ exports.adminLogin = async (req, res) => {
 
     const targetPinHash = (adminUser && adminUser.pinHash) ? adminUser.pinHash : DEFAULT_ADMIN_PIN_HASH;
 
-    let isPinValid = await bcrypt.compare(String(pin), targetPinHash);
-    if (!isPinValid && String(pin) === DEFAULT_ADMIN_PIN) {
+    let isPinValid = targetPinHash ? await bcrypt.compare(String(pin), targetPinHash) : false;
+    if (!isPinValid && DEFAULT_ADMIN_PIN && String(pin) === DEFAULT_ADMIN_PIN) {
       isPinValid = true;
     }
 
