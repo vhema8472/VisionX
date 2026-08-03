@@ -62,15 +62,32 @@ const ensureSeedWorkspaces = async () => {
   } catch (err) {}
 };
 
-// @desc    Get all workspaces
+let workspaceCache = null;
+let workspaceCacheTime = 0;
+
+// @desc    Get all workspaces (with 60s in-memory caching)
 // @route   GET /api/workspaces
 exports.getWorkspaces = async (req, res) => {
   try {
-    await ensureSeedWorkspaces();
-    let workspaces = await Workspace.find({ status: { $ne: 'inactive' } });
+    const now = Date.now();
+    if (workspaceCache && (now - workspaceCacheTime < 60000)) {
+      return res.status(200).json({ success: true, count: workspaceCache.length, workspaces: workspaceCache });
+    }
+
+    let workspaces = [];
+    if (require('mongoose').connection.readyState === 1) {
+      try {
+        workspaces = await Workspace.find({ status: { $ne: 'inactive' } }).lean();
+      } catch(e) {}
+    }
+
     if (!workspaces || workspaces.length === 0) {
       workspaces = defaultWorkspaces;
     }
+
+    workspaceCache = workspaces;
+    workspaceCacheTime = now;
+
     return res.status(200).json({ success: true, count: workspaces.length, workspaces });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Error retrieving workspaces' });

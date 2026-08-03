@@ -13,7 +13,7 @@ const fetchFallbackBookings = () => {
   return [];
 };
 
-// @desc    Get dashboard aggregate statistics
+// @desc    Get dashboard aggregate statistics (Fast Parallel Aggregation)
 // @route   GET /api/admin/dashboard/stats or /api/admin/stats
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -29,14 +29,33 @@ exports.getDashboardStats = async (req, res) => {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
         if (ensureSeedPayments) await ensureSeedPayments();
-        dbUserCount = await User.countDocuments();
-        dbBookingCount = await Booking.countDocuments();
-        todaysBookingCount = await Booking.countDocuments({ date: todayStr });
-        pendingBookingCount = await Booking.countDocuments({ bookingStatus: 'pending' });
-        confirmedBookingCount = await Booking.countDocuments({ bookingStatus: 'confirmed' });
 
-        const payments = await Payment.find({ status: 'paid' });
-        calculatedRevenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        // Concurrently run all database count & aggregation pipelines in parallel
+        const [
+          uCount,
+          bCount,
+          todayCount,
+          pCount,
+          cCount,
+          revResult
+        ] = await Promise.all([
+          User.countDocuments().exec(),
+          Booking.countDocuments().exec(),
+          Booking.countDocuments({ $or: [{ date: todayStr }, { bookingDate: todayStr }] }).exec(),
+          Booking.countDocuments({ bookingStatus: 'pending' }).exec(),
+          Booking.countDocuments({ bookingStatus: { $in: ['confirmed', 'Active'] } }).exec(),
+          Payment.aggregate([
+            { $match: { status: 'paid' } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+          ]).exec()
+        ]);
+
+        dbUserCount = uCount;
+        dbBookingCount = bCount;
+        todaysBookingCount = todayCount;
+        pendingBookingCount = pCount;
+        confirmedBookingCount = cCount;
+        calculatedRevenue = (revResult && revResult[0]) ? revResult[0].total : 0;
       } catch (e) {}
     }
 
@@ -74,21 +93,24 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
-// @desc    Get all admin bookings (with status filter)
+// @desc    Get all admin bookings (with pagination & status filter)
 // @route   GET /api/admin/bookings
 exports.getAdminBookings = async (req, res) => {
   try {
-    const { status } = req.query;
+    const { status, limit = 50, page = 1 } = req.query;
     let query = {};
     if (status) {
       query.bookingStatus = status;
     }
 
+    const limitNum = Math.min(parseInt(limit, 10) || 50, 100);
+    const skipNum = (Math.max(parseInt(page, 10) || 1, 1) - 1) * limitNum;
+
     let bookings = [];
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
-        bookings = await Booking.find(query).sort({ createdAt: -1 });
+        bookings = await Booking.find(query).sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
       } catch (e) {}
     }
 
@@ -118,7 +140,7 @@ exports.getRecentBookings = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedBookings) await ensureSeedBookings();
-        bookings = await Booking.find().sort({ createdAt: -1 }).limit(10);
+        bookings = await Booking.find().sort({ createdAt: -1 }).limit(10).lean();
       } catch (e) {}
     }
 
@@ -145,7 +167,7 @@ exports.getLatestPayments = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       try {
         if (ensureSeedPayments) await ensureSeedPayments();
-        payments = await Payment.find().sort({ createdAt: -1 }).limit(10);
+        payments = await Payment.find().sort({ createdAt: -1 }).limit(10).lean();
       } catch (e) {}
     }
 
@@ -186,7 +208,7 @@ exports.updateBookingStatus = async (req, res) => {
           { $or: [{ bookingId }, { _id: bookingId }] },
           { $set: { bookingStatus: targetStatus } },
           { new: true }
-        );
+        ).lean();
       } catch (e) {}
     }
 
@@ -221,5 +243,113 @@ exports.deleteBooking = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Booking deleted successfully' });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to delete booking' });
+  }
+};
+
+// @desc    Get Revenue Overview chart data ($)
+// @route   GET /api/admin/dashboard/revenue or /api/admin/revenue-overview
+exports.getRevenueOverview = async (req, res) => {
+  try {
+    let monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+    let monthlyData = [12500, 15200, 14800, 18900, 22400, 21000, 26500, 29800];
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const paidPayments = await Payment.find({ status: 'paid' }).lean();
+        if (paidPayments && paidPayments.length > 0) {
+          const monthMap = {};
+          paidPayments.forEach(p => {
+            const dateObj = new Date(p.createdAt || Date.now());
+            const monthName = dateObj.toLocaleString('en-US', { month: 'short' });
+            monthMap[monthName] = (monthMap[monthName] || 0) + (p.amount || 0);
+          });
+          if (Object.keys(monthMap).length > 0) {
+            monthlyLabels = Object.keys(monthMap);
+            monthlyData = Object.values(monthMap);
+          }
+        }
+      } catch (e) {}
+    }
+
+    const { sharedPaymentsStore } = require('./paymentController');
+    if (sharedPaymentsStore && sharedPaymentsStore.length > 0) {
+      const monthMap = {};
+      sharedPaymentsStore.forEach(p => {
+        if (p.status === 'paid' || !p.status) {
+          const dateObj = new Date(p.createdAt || Date.now());
+          const monthName = dateObj.toLocaleString('en-US', { month: 'short' });
+          monthMap[monthName] = (monthMap[monthName] || 0) + (p.amount || 0);
+        }
+      });
+      if (Object.keys(monthMap).length > 0) {
+        monthlyLabels = Object.keys(monthMap);
+        monthlyData = Object.values(monthMap);
+      }
+    }
+
+    const totalRevenue = monthlyData.reduce((a, b) => a + b, 0);
+
+    return res.status(200).json({
+      success: true,
+      revenue: {
+        labels: monthlyLabels,
+        data: monthlyData,
+        totalRevenue: Math.round(totalRevenue * 100) / 100,
+        currency: 'USD'
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch revenue overview' });
+  }
+};
+
+// @desc    Get Weekly Bookings chart data
+// @route   GET /api/admin/dashboard/weekly-bookings or /api/admin/weekly-bookings
+exports.getWeeklyBookings = async (req, res) => {
+  try {
+    let days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    let counts = [45, 62, 78, 85, 92, 54, 38];
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const bookings = await Booking.find().lean();
+        if (bookings && bookings.length > 0) {
+          const dayMap = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+          bookings.forEach(b => {
+            const dateObj = new Date(b.createdAt || b.date || b.bookingDate || Date.now());
+            const dayName = dateObj.toLocaleString('en-US', { weekday: 'short' });
+            if (dayMap[dayName] !== undefined) {
+              dayMap[dayName]++;
+            }
+          });
+          days = Object.keys(dayMap);
+          counts = Object.values(dayMap);
+        }
+      } catch (e) {}
+    }
+
+    const fallbackList = fetchFallbackBookings();
+    if (fallbackList && fallbackList.length > 0) {
+      const dayMap = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+      fallbackList.forEach(b => {
+        const dateObj = new Date(b.createdAt || b.date || b.bookingDate || Date.now());
+        const dayName = dateObj.toLocaleString('en-US', { weekday: 'short' });
+        if (dayMap[dayName] !== undefined) {
+          dayMap[dayName]++;
+        }
+      });
+      days = Object.keys(dayMap);
+      counts = Object.values(dayMap);
+    }
+
+    return res.status(200).json({
+      success: true,
+      weeklyBookings: {
+        labels: days,
+        data: counts
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch weekly bookings' });
   }
 };

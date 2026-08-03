@@ -13,15 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Auth Guard & Navbar Dynamic UI Behavior
 function initAuthStateGuard() {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' && !!token;
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
   
   // List of Protected Pages requiring Login Authentication
-  const protectedPages = ['profile.html', 'booking-history.html', 'booking-details.html', 'notifications.html'];
+  const protectedPages = ['profile.html', 'booking-history.html', 'booking-details.html', 'notifications.html', 'booking.html', 'payment.html'];
 
   // Protection Guard: If unauthenticated user attempts direct access to protected page
   if (!isLoggedIn && protectedPages.includes(currentPath)) {
-    sessionStorage.setItem('auth_redirect_toast', 'Please login to access your profile.');
+    sessionStorage.setItem('auth_redirect_toast', 'Please log in to continue.');
     window.location.href = 'login.html';
     return;
   }
@@ -32,13 +33,13 @@ function initAuthStateGuard() {
     if (isLoggedIn) {
       // User Logged In: Show Profile link / Avatar + Logout, Hide Login/Register
       const userData = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
-      const avatarUrl = userData.avatarUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80';
-      const userName = userData.firstName || 'Sarah';
+      const avatarUrl = userData.avatarUrl || userData.profileImage || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+      const userName = userData.name || userData.firstName || 'Member';
 
       headerActions.innerHTML = `
         <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
-        <a href="profile.html" class="user-profile-btn" title="View Profile">
-          <img src="${avatarUrl}" alt="${userName}" class="avatar-sm">
+        <a href="profile.html" class="user-profile-btn" title="View Profile" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 600;">
+          <img src="${avatarUrl}" alt="${userName}" class="avatar-sm" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
           <span class="user-name-text">${userName}</span>
         </a>
         <button type="button" class="btn btn-secondary btn-sm" id="nav-logout-btn">Logout</button>
@@ -65,12 +66,12 @@ function initAuthStateGuard() {
 // Global Logout Action
 async function handleGlobalLogout() {
   if (window.API && window.API.logoutUser) {
-    await API.logoutUser();
-  } else {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('workhub_user_session');
-    sessionStorage.clear();
+    try { await API.logoutUser(); } catch(e){}
   }
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('workhub_user_session');
+  localStorage.removeItem('token');
+  sessionStorage.clear();
 
   showToast('Logged out successfully.', 'success');
   setTimeout(() => {
@@ -112,15 +113,22 @@ function initNavigation() {
 
 // Mobile Hamburger Menu Toggle
 function initMobileMenu() {
-  const toggleBtn = document.querySelector('.mobile-toggle');
-  const navMenu = document.querySelector('.nav-menu');
+  document.addEventListener('click', (e) => {
+    const toggleBtn = e.target.closest('.mobile-toggle');
+    const navMenu = document.querySelector('.nav-menu');
 
-  if (toggleBtn && navMenu) {
-    toggleBtn.addEventListener('click', () => {
+    if (toggleBtn && navMenu) {
       navMenu.classList.toggle('is-active');
       toggleBtn.setAttribute('aria-expanded', navMenu.classList.contains('is-active'));
-    });
-  }
+      return;
+    }
+
+    if (navMenu && navMenu.classList.contains('is-active')) {
+      if (e.target.closest('.nav-link') || !e.target.closest('.site-header')) {
+        navMenu.classList.remove('is-active');
+      }
+    }
+  });
 }
 
 // Footer Newsletter Handler

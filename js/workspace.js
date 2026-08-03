@@ -92,7 +92,7 @@ function renderWorkspaces() {
     return `
       <article class="ws-item-card" data-id="${ws.id}" data-type="${ws.type}">
         <div class="ws-item-thumb">
-          <img src="${ws.image}" alt="${ws.name}">
+          <img src="${ws.image}" alt="${ws.name}" loading="lazy" decoding="async">
           <span class="badge ${badgeClass} ws-status-badge">${ws.status}</span>
         </div>
         <div class="ws-item-content">

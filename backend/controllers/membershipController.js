@@ -36,8 +36,8 @@ exports.createMembershipBooking = async (req, res) => {
   try {
     const { membershipId, planName, price } = req.body;
     const userId = req.user ? req.user.userId : 'USR-GUEST';
-    const userName = req.user ? req.user.name : 'Sarah Jenkins';
-    const userEmail = req.user ? req.user.email : 'sarah.jenkins@cloudscale.ai';
+    const userName = req.user ? req.user.name : 'Member';
+    const userEmail = req.user ? req.user.email : '';
 
     const startDate = new Date().toISOString().split('T')[0];
     const endDateObj = new Date();

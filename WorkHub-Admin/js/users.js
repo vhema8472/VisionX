@@ -18,8 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadUsersData() {
   usersData = WorkHubStore.get(WorkHubStore.KEYS.USERS);
+  const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
   try {
-    const res = await fetch('http://localhost:5000/api/admin/users');
+    const res = await fetch('http://localhost:5000/api/admin/users', {
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
     const data = await res.json();
     if (data.success && Array.isArray(data.users) && data.users.length > 0) {
       usersData = data.users.map(u => ({

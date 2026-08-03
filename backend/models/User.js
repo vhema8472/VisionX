@@ -47,15 +47,15 @@ const UserSchema = new mongoose.Schema(
     profileImage: {
       type: String,
       default: ''
-    },
-    isActive: {
-      type: Boolean,
-      default: true
     }
   },
   {
     timestamps: true
   }
 );
+
+// High Performance Compound Indexes
+UserSchema.index({ email: 1 });
+UserSchema.index({ role: 1 });
 
 module.exports = mongoose.model('User', UserSchema);

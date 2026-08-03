@@ -19,7 +19,7 @@ async function loadInvoicesData() {
     if (data.success && Array.isArray(data.payments) && data.payments.length > 0) {
       invoicesData = data.payments.map(p => ({
         id: p.paymentId || p.transactionId,
-        customer: p.userName || 'Sarah Jenkins',
+        customer: p.userName || 'Customer',
         amount: typeof p.amount === 'number' ? `$${p.amount.toFixed(2)}` : p.amount,
         date: new Date(p.createdAt || Date.now()).toLocaleDateString(),
         method: p.paymentMethod || 'Credit Card',

@@ -80,9 +80,9 @@ exports.createBooking = async (req, res) => {
       specialRequest
     } = req.body;
 
-    const finalUserId = userId || (req.user ? req.user.userId : 'USR-GUEST');
-    const finalUserName = userName || user || (req.user ? req.user.name : 'Sarah Jenkins');
-    const finalUserEmail = userEmail || (req.user ? req.user.email : 'sarah.jenkins@cloudscale.ai');
+    const finalUserId = (req.user && req.user.userId) ? req.user.userId : (userId || 'USR-GUEST');
+    const finalUserName = (req.user && req.user.name) ? req.user.name : (userName || user || 'Member');
+    const finalUserEmail = (req.user && req.user.email) ? req.user.email : (userEmail || '');
 
     const finalWorkspaceId = workspaceId || 'WS-001';
     const finalWorkspaceName = workspaceName || title || 'Executive Desk';
@@ -230,12 +230,22 @@ exports.createBooking = async (req, res) => {
 // @route   GET /api/users/me/bookings or /api/bookings/my
 exports.getUserBookings = async (req, res) => {
   try {
-    await ensureSeedBookings();
-    const userId = req.user ? req.user.userId : 'USR-GUEST';
-    let bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
+    const userId = req.user ? req.user.userId : '';
+    const userEmail = req.user ? req.user.email : '';
 
-    if (!bookings || bookings.length === 0) {
-      bookings = await Booking.find().sort({ createdAt: -1 });
+    let bookings = [];
+    if (require('mongoose').connection.readyState === 1) {
+      try {
+        bookings = await Booking.find({
+          $or: [{ userId }, { userEmail }]
+        }).sort({ createdAt: -1 });
+      } catch (e) {}
+    }
+
+    if ((!bookings || bookings.length === 0) && sharedBookingsStore) {
+      bookings = sharedBookingsStore.filter(b => 
+        (userId && b.userId === userId) || (userEmail && b.userEmail === userEmail)
+      );
     }
 
     return res.status(200).json({ success: true, count: bookings.length, bookings });

@@ -9,14 +9,15 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@workhub.com').toLowerCase();
 const DEFAULT_ADMIN_PIN = process.env.ADMIN_PIN || '889900';
 const DEFAULT_ADMIN_PIN_HASH = bcrypt.hashSync(DEFAULT_ADMIN_PIN, 10);
+const DEFAULT_USER_PASS_HASH = bcrypt.hashSync('password123', 10);
 
 // Shared memory store for fallback & real-time synchronization
 const sharedUsersStore = [
-  { userId: 'USR-101', name: 'Alex Johnson', email: 'alex.johnson@cloudscale.ai', phone: '+1 (555) 019-2834', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
-  { userId: 'USR-102', name: 'Sophia Taylor', email: 'sophia.taylor@designlab.io', phone: '+1 (555) 014-9821', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
-  { userId: 'USR-103', name: 'David Chen', email: 'david.chen@fintech.org', phone: '+1 (555) 018-3342', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
-  { userId: 'USR-104', name: 'Sarah Jenkins', email: 'sarah.jenkins@cloudscale.ai', phone: '+1 (555) 012-3456', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
-  { userId: 'USR-ADMIN', name: 'WorkHub Admin', email: DEFAULT_ADMIN_EMAIL, phone: '+1 (555) 000-0000', role: 'admin', pinHash: DEFAULT_ADMIN_PIN_HASH, authProvider: 'local', isActive: true, createdAt: new Date() }
+  { userId: 'USR-101', name: 'Alex Johnson', email: 'alex.johnson@cloudscale.ai', passwordHash: DEFAULT_USER_PASS_HASH, phone: '+1 (555) 019-2834', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
+  { userId: 'USR-102', name: 'Sophia Taylor', email: 'sophia.taylor@designlab.io', passwordHash: DEFAULT_USER_PASS_HASH, phone: '+1 (555) 014-9821', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
+  { userId: 'USR-103', name: 'David Chen', email: 'david.chen@fintech.org', passwordHash: DEFAULT_USER_PASS_HASH, phone: '+1 (555) 018-3342', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
+  { userId: 'USR-104', name: 'Sarah Jenkins', email: 'sarah.jenkins@cloudscale.ai', passwordHash: DEFAULT_USER_PASS_HASH, phone: '+1 (555) 012-3456', role: 'user', authProvider: 'local', isActive: true, createdAt: new Date() },
+  { userId: 'USR-ADMIN', name: 'WorkHub Admin', email: DEFAULT_ADMIN_EMAIL, passwordHash: bcrypt.hashSync('admin123', 10), phone: '+1 (555) 000-0000', role: 'admin', pinHash: DEFAULT_ADMIN_PIN_HASH, authProvider: 'local', isActive: true, createdAt: new Date() }
 ];
 
 // Seed default users if DB empty
@@ -25,15 +26,8 @@ const ensureSeedUsers = async () => {
   try {
     const count = await User.countDocuments();
     if (count === 0) {
-      const adminSalt = await bcrypt.genSalt(10);
-      const adminPassHash = await bcrypt.hash('admin123', adminSalt);
-      const adminDoc = {
-        ...sharedUsersStore[4],
-        passwordHash: adminPassHash,
-        pinHash: DEFAULT_ADMIN_PIN_HASH
-      };
-      await User.create(adminDoc);
-      console.log('🌱 Seeded default admin into MongoDB collection "users".');
+      await User.insertMany(sharedUsersStore);
+      console.log('🌱 Seeded default users into MongoDB collection "users".');
     }
   } catch (err) {}
 };
@@ -42,7 +36,7 @@ const ensureSeedUsers = async () => {
 // @route   POST /api/auth/register
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone, password, role } = req.body;
+    const { name, email, phone, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -53,8 +47,12 @@ exports.register = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // Force role to user for registration (Admins must be provisioned explicitly)
-    const userRole = 'user';
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long.'
+      });
+    }
 
     let existingUser = sharedUsersStore.find(u => u.email === cleanEmail);
     if (mongoose.connection.readyState === 1) {
@@ -71,8 +69,8 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Hash password using bcrypt
-    const salt = await bcrypt.genSalt(10);
+    // Hash password using bcrypt (salt 12)
+    const salt = await bcrypt.genSalt(12);
     const passwordHash = await bcrypt.hash(password, salt);
     const userId = `USR-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -85,7 +83,7 @@ exports.register = async (req, res) => {
       pinHash: '',
       googleId: '',
       authProvider: 'local',
-      role: userRole,
+      role: 'user',
       isActive: true,
       createdAt: new Date()
     };
@@ -99,26 +97,9 @@ exports.register = async (req, res) => {
       } catch (e) {}
     }
 
-    // Generate User JWT token (role: 'user')
-    const token = jwt.sign(
-      { userId: newUserObj.userId, email: newUserObj.email, role: 'user', name: newUserObj.name },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
-
     return res.status(201).json({
       success: true,
-      message: 'Registration successful',
-      token,
-      user: {
-        id: newUserObj.userId,
-        userId: newUserObj.userId,
-        name: newUserObj.name,
-        email: newUserObj.email,
-        phone: newUserObj.phone,
-        role: 'user',
-        authProvider: 'local'
-      }
+      message: 'Registration successful'
     });
   } catch (error) {
     console.error('Registration Error:', error);
@@ -157,7 +138,7 @@ exports.login = async (req, res) => {
       user = sharedUsersStore.find(u => u.email === cleanEmail);
     }
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password.'
@@ -171,15 +152,13 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Compare password with bcrypt hash if present
-    if (user.passwordHash) {
-      const isMatch = await bcrypt.compare(password, user.passwordHash);
-      if (!isMatch) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid email or password.'
-        });
-      }
+    // Compare password with bcrypt hash strictly
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password.'
+      });
     }
 
     // Generate User JWT token
@@ -240,7 +219,6 @@ exports.adminLogin = async (req, res) => {
       adminUser = sharedUsersStore.find(u => u.email === cleanEmail && u.role === 'admin');
     }
 
-    // Direct check for default admin email & PIN
     const isDefaultAdmin = (cleanEmail === DEFAULT_ADMIN_EMAIL);
 
     if (!adminUser && !isDefaultAdmin) {
@@ -252,7 +230,6 @@ exports.adminLogin = async (req, res) => {
 
     const targetPinHash = (adminUser && adminUser.pinHash) ? adminUser.pinHash : DEFAULT_ADMIN_PIN_HASH;
 
-    // Compare PIN using bcrypt.compare against pinHash
     let isPinValid = await bcrypt.compare(String(pin), targetPinHash);
     if (!isPinValid && String(pin) === DEFAULT_ADMIN_PIN) {
       isPinValid = true;

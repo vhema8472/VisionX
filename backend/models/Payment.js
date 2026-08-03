@@ -19,6 +19,10 @@ const PaymentSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    userName: {
+      type: String,
+      default: ''
+    },
     amount: {
       type: Number,
       required: true
@@ -45,5 +49,10 @@ const PaymentSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// High Performance Compound Indexes
+PaymentSchema.index({ userId: 1, createdAt: -1 });
+PaymentSchema.index({ bookingId: 1 });
+PaymentSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Payment', PaymentSchema);

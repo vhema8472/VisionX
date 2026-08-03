@@ -120,18 +120,34 @@ function initLoginForm() {
         return;
       }
 
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+      }
+
       showLoading();
 
       try {
         const response = await API.loginUser(email, pass);
-        if (response.success) {
-          showToast('Login successful! Redirecting to profile...', 'success');
+        if (response && response.success) {
+          showToast('Login successful! Welcome back.', 'success');
           setTimeout(() => {
-            window.location.href = 'profile.html';
+            window.location.href = 'index.html';
           }, 800);
+        } else {
+          showToast(response.message || 'Invalid email or password.', 'error');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In';
+          }
         }
       } catch (err) {
-        showToast(err.message || 'Login failed.', 'error');
+        showToast(err.message || 'Invalid email or password.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
       } finally {
         hideLoading();
       }
@@ -178,15 +194,22 @@ function initRegisterForm() {
         const firstName = nameParts[0] || 'User';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        const response = await API.registerUser({ firstName, lastName, email });
-        if (response.success) {
-          showToast('Account created successfully! Welcome to WorkHub.', 'success');
+        const response = await API.registerUser({
+          name: fullname,
+          email: email,
+          password: pass
+        });
+
+        if (response && response.success) {
+          showToast('Account created successfully! Please log in with your credentials.', 'success');
           setTimeout(() => {
-            window.location.href = 'profile.html';
-          }, 800);
+            window.location.href = 'login.html';
+          }, 1000);
+        } else {
+          showToast(response.message || 'Registration failed. Please try again.', 'error');
         }
       } catch (err) {
-        showToast('Registration failed. Please try again.', 'error');
+        showToast(err.message || 'Registration failed. Please try again.', 'error');
       } finally {
         hideLoading();
       }

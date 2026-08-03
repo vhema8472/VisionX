@@ -1,98 +1,170 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Booking = require('../models/Booking');
 const Payment = require('../models/Payment');
 const MembershipBooking = require('../models/MembershipBooking');
+const { sharedUsersStore } = require('./authController');
 
-// Default initial seed users for fallback
-const initialSeedUsers = [
-  { userId: 'USR-101', name: 'Alex Johnson', email: 'alex.johnson@cloudscale.ai', phone: '+1 (555) 019-2834', role: 'user', profileImage: '', createdAt: new Date() },
-  { userId: 'USR-102', name: 'Sophia Taylor', email: 'sophia.taylor@designlab.io', phone: '+1 (555) 014-9821', role: 'user', profileImage: '', createdAt: new Date() },
-  { userId: 'USR-103', name: 'David Chen', email: 'david.chen@fintech.org', phone: '+1 (555) 018-3342', role: 'user', profileImage: '', createdAt: new Date() },
-  { userId: 'USR-104', name: 'Sarah Jenkins', email: 'sarah.jenkins@cloudscale.ai', phone: '+1 (555) 012-3456', role: 'user', profileImage: '', createdAt: new Date() },
-  { userId: 'USR-105', name: 'WorkHub Admin', email: 'admin@workhub.com', phone: '+1 (555) 000-0000', role: 'admin', profileImage: '', createdAt: new Date() }
-];
-
-const ensureSeedUsers = async () => {
-  try {
-    const count = await User.countDocuments();
-    if (count === 0) {
-      await User.insertMany(initialSeedUsers);
-    }
-  } catch (e) {}
-};
-
-// @desc    Get user profile
-// @route   GET /api/users/me
+// @desc    Get authenticated user profile
+// @route   GET /api/users/profile or GET /api/users/me
 exports.getProfile = async (req, res) => {
   try {
-    const userId = req.user ? req.user.userId : 'USR-104';
-    let user = await User.findOne({ userId }).select('-passwordHash');
-
-    if (!user) {
-      user = initialSeedUsers.find(u => u.userId === userId) || initialSeedUsers[3];
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required.' });
     }
 
-    return res.status(200).json({ success: true, user });
+    const userId = req.user.userId;
+    const userEmail = req.user.email;
+
+    let user = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        user = await User.findOne({
+          $or: [{ userId }, { email: userEmail }]
+        }).select('-passwordHash -pinHash');
+      } catch (dbErr) {}
+    }
+
+    if (!user && sharedUsersStore) {
+      user = sharedUsersStore.find(u => u.userId === userId || u.email === userEmail);
+    }
+
+    if (!user) {
+      user = {
+        userId,
+        name: req.user.name || 'Member',
+        email: userEmail,
+        phone: req.user.phone || '',
+        role: req.user.role || 'user'
+      };
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user.userId || userId,
+        userId: user.userId || userId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || '',
+        role: user.role || 'user',
+        profileImage: user.profileImage || '',
+        authProvider: user.authProvider || 'local',
+        createdAt: user.createdAt
+      }
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch profile' });
+    console.error('getProfile Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user profile',
+      error: error.message
+    });
   }
 };
 
 // @desc    Update user profile
-// @route   PUT /api/users/me
+// @route   PUT /api/users/profile or PUT /api/users/me
 exports.updateProfile = async (req, res) => {
   try {
-    const userId = req.user ? req.user.userId : 'USR-104';
-    const { name, phone, email } = req.body;
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required.' });
+    }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userId },
-      { $set: { name, phone, email } },
-      { new: true }
-    ).select('-passwordHash');
+    const userId = req.user.userId;
+    const { name, phone, address, city, state, postalCode, country, profileImage } = req.body;
 
-    return res.status(200).json({ success: true, message: 'Profile updated successfully', user: updatedUser });
+    let updatedUser = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        updatedUser = await User.findOneAndUpdate(
+          { userId },
+          { $set: { name, phone, address, city, state, postalCode, country, profileImage } },
+          { new: true }
+        ).select('-passwordHash -pinHash');
+      } catch (e) {}
+    }
+
+    if (sharedUsersStore) {
+      const match = sharedUsersStore.find(u => u.userId === userId || u.email === req.user.email);
+      if (match) {
+        if (name) match.name = name;
+        if (phone) match.phone = phone;
+        if (profileImage) match.profileImage = profileImage;
+        if (!updatedUser) updatedUser = match;
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: updatedUser || { userId, name, email: req.user.email }
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update profile' });
   }
 };
 
-// @desc    Get user's payments
+// @desc    Get user payment history
 // @route   GET /api/users/me/payments
 exports.getUserPayments = async (req, res) => {
   try {
-    const userId = req.user ? req.user.userId : 'USR-104';
-    const payments = await Payment.find({ userId }).sort({ createdAt: -1 });
+    const userId = req.user ? req.user.userId : '';
+    let payments = [];
+    if (mongoose.connection.readyState === 1) {
+      try {
+        payments = await Payment.find({ userId }).sort({ createdAt: -1 });
+      } catch (e) {}
+    }
     return res.status(200).json({ success: true, count: payments.length, payments });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch user payments' });
+    return res.status(500).json({ success: false, message: 'Failed to fetch payments' });
   }
 };
 
-// @desc    Get user's memberships
+// @desc    Get user memberships
 // @route   GET /api/users/me/memberships
 exports.getUserMemberships = async (req, res) => {
   try {
-    const userId = req.user ? req.user.userId : 'USR-104';
-    const memberships = await MembershipBooking.find({ userId }).sort({ createdAt: -1 });
+    const userId = req.user ? req.user.userId : '';
+    let memberships = [];
+    if (mongoose.connection.readyState === 1) {
+      try {
+        memberships = await MembershipBooking.find({ userId }).sort({ createdAt: -1 });
+      } catch (e) {}
+    }
     return res.status(200).json({ success: true, count: memberships.length, memberships });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch user memberships' });
+    return res.status(500).json({ success: false, message: 'Failed to fetch memberships' });
   }
 };
 
-// @desc    Get all users (Admin)
-// @route   GET /api/admin/users or /api/users
+// @desc    Get all users (Admin only)
+// @route   GET /api/users or GET /api/admin/users
 exports.getAllUsers = async (req, res) => {
   try {
-    await ensureSeedUsers();
-    let users = await User.find().select('-passwordHash').sort({ createdAt: -1 });
-    if (!users || users.length === 0) users = initialSeedUsers;
+    let users = [];
+    if (mongoose.connection.readyState === 1) {
+      try {
+        users = await User.find().select('-passwordHash -pinHash').lean();
+      } catch (e) {}
+    }
+    if (!users || users.length === 0) {
+      users = sharedUsersStore || [];
+    }
 
-    return res.status(200).json({ success: true, count: users.length, users });
+    // Explicitly sanitize sensitive credentials (password, passwordHash, pin, pinHash)
+    const sanitizedUsers = users.map(u => {
+      const userObj = u.toObject ? u.toObject() : { ...u };
+      delete userObj.password;
+      delete userObj.passwordHash;
+      delete userObj.pin;
+      delete userObj.pinHash;
+      return userObj;
+    });
+
+    return res.status(200).json({ success: true, count: sanitizedUsers.length, users: sanitizedUsers });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
 };
-
-exports.ensureSeedUsers = ensureSeedUsers;

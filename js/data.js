@@ -7,35 +7,8 @@ const WorkHubData = {
   LOGGED_IN_KEY: 'isLoggedIn',
   BOOKINGS_KEY: 'workhub_user_bookings',
 
-  // Current User Session Profile
-  currentUser: {
-    id: "usr_88329",
-    firstName: "Sarah",
-    lastName: "Jenkins",
-    email: "sarah.jenkins@cloudscale.ai",
-    phone: "+1 (555) 982-1044",
-    dob: "1992-05-24",
-    address: "1284 Oakwood Ave, Suite 400",
-    city: "San Francisco",
-    state: "California",
-    postalCode: "94103",
-    country: "United States",
-    role: "Senior Product Designer at CloudScale AI",
-    status: "Active",
-    membershipPlan: "Business Plan",
-    membershipTier: "PRO",
-    membershipId: "VX-88329-SJ",
-    memberSince: "October 14, 2022",
-    startDate: "Jan 01, 2024",
-    expiryDate: "Dec 31, 2024",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
-    notifications: {
-      bookingConfirmations: true,
-      membershipUpdates: true,
-      paymentNotifications: true,
-      promotionalEmails: false
-    }
-  },
+  // Authenticated User Session Profile (Populated via real backend API)
+  currentUser: null,
 
   // 10 Workspace Cards Inventory with Dynamic Time-Slot Availability Schedules
   workspaces: [
@@ -392,7 +365,7 @@ const API = {
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
         if (data.token) {
           localStorage.setItem('token', data.token);
@@ -403,14 +376,13 @@ const API = {
         }
         return data;
       } else {
-        throw new Error(data.message || 'Login failed.');
+        throw new Error(data.message || 'Invalid email or password.');
       }
     } catch (err) {
-      if (err.message && !err.message.includes('fetch')) throw err;
-      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-      const user = { ...WorkHubData.currentUser, email };
-      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
-      return { success: true, user, message: 'Login successful!' };
+      if (err.message && !err.message.toLowerCase().includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Unable to connect to the server. Please try again later.');
     }
   },
 
@@ -424,7 +396,7 @@ const API = {
         body: JSON.stringify({ email, pin })
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
         if (data.token) {
           localStorage.setItem('token', data.token);
@@ -438,14 +410,10 @@ const API = {
         throw new Error(data.message || 'Invalid admin credentials.');
       }
     } catch (err) {
-      if (err.message && !err.message.includes('fetch')) throw err;
-      if (email === 'admin@workhub.com' && String(pin) === '889900') {
-        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-        const adminUser = { id: 'USR-ADMIN', userId: 'USR-ADMIN', name: 'WorkHub Admin', email, role: 'admin' };
-        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(adminUser));
-        return { success: true, user: adminUser, message: 'Admin authentication successful!' };
+      if (err.message && !err.message.toLowerCase().includes('fetch')) {
+        throw err;
       }
-      throw new Error('Invalid admin credentials.');
+      throw new Error('Unable to connect to the server. Please try again later.');
     }
   },
 
@@ -462,25 +430,16 @@ const API = {
         })
       });
       const data = await res.json();
-      if (data.success) {
-        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          sessionStorage.setItem('token', data.token);
-        }
-        if (data.user) {
-          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        }
+      if (res.ok && data.success) {
         return data;
       } else {
         throw new Error(data.message || 'Registration failed.');
       }
     } catch (err) {
-      if (err.message && !err.message.includes('fetch')) throw err;
-      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-      const user = { ...WorkHubData.currentUser, ...userData };
-      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
-      return { success: true, user, message: 'Account created successfully!' };
+      if (err.message && !err.message.toLowerCase().includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Unable to connect to the server. Please try again later.');
     }
   },
 
@@ -492,7 +451,7 @@ const API = {
         body: JSON.stringify(googlePayload)
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
         if (data.token) {
           localStorage.setItem('token', data.token);
@@ -506,11 +465,10 @@ const API = {
         throw new Error(data.message || 'Google Sign-In failed.');
       }
     } catch (err) {
-      if (err.message && !err.message.includes('fetch')) throw err;
-      localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-      const user = { ...WorkHubData.currentUser, name: 'Google User', email: 'google.user@workhub.io', authProvider: 'google' };
-      localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
-      return { success: true, user, message: 'Google Sign-In successful!' };
+      if (err.message && !err.message.toLowerCase().includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Unable to connect to the server. Please try again later.');
     }
   },
 
@@ -528,24 +486,48 @@ const API = {
   async fetchUserProfile() {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const res = await fetch('http://localhost:5000/api/users/me', {
+      if (!token) return { success: false, data: null };
+      const res = await fetch('http://localhost:5000/api/users/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (data.success && data.user) {
+      if (res.ok && data.success && data.user) {
         localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
         return { success: true, data: data.user };
       }
     } catch(e){}
+
     const stored = localStorage.getItem(WorkHubData.SESSION_KEY);
-    const user = stored ? JSON.parse(stored) : WorkHubData.currentUser;
-    return Promise.resolve({ success: true, data: user });
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        if (user && user.email) return { success: true, data: user };
+      } catch(e){}
+    }
+    return { success: false, data: null };
+  },
+
+  async getUserMemberships() {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+      if (!token) return { success: false, memberships: [] };
+      const res = await fetch('http://localhost:5000/api/users/me/memberships', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        return data;
+      }
+    } catch(e){}
+    return { success: false, memberships: [] };
   },
 
   async updateProfile(profileData) {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const res = await fetch('http://localhost:5000/api/users/me', {
+      if (!token) throw new Error('Authentication token missing.');
+
+      const res = await fetch('http://localhost:5000/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -554,15 +536,21 @@ const API = {
         body: JSON.stringify(profileData)
       });
       const data = await res.json();
-      if (data.success && data.user) {
-        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        return { success: true, data: data.user, message: 'Profile updated!' };
+      if (res.ok && data.success) {
+        const storedStr = localStorage.getItem(WorkHubData.SESSION_KEY);
+        let storedUser = storedStr ? JSON.parse(storedStr) : {};
+        const mergedUser = { ...storedUser, ...data.user, ...profileData };
+        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(mergedUser));
+        return { success: true, data: mergedUser, message: 'Profile updated!' };
+      } else {
+        throw new Error(data.message || 'Failed to update profile.');
       }
-    } catch(e){}
-    const current = await this.fetchUserProfile();
-    const updated = { ...current.data, ...profileData };
-    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(updated));
-    return Promise.resolve({ success: true, data: updated, message: 'Profile updated!' });
+    } catch(err) {
+      if (err.message && !err.message.toLowerCase().includes('fetch')) {
+        throw err;
+      }
+      throw new Error('Unable to connect to the server. Please try again later.');
+    }
   },
 
   async fetchWorkspaces(filters = {}) {
@@ -634,30 +622,39 @@ const API = {
 
   async createBooking(bookingPayload) {
     const bookingId = bookingPayload.bookingId || ('BK' + new Date().toISOString().slice(0,10).replace(/-/g,"") + '-' + Math.random().toString(36).substring(2,7).toUpperCase());
+    const sessUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
     const newBooking = {
       bookingId,
-      userName: bookingPayload.userName || bookingPayload.user || 'Sarah Jenkins',
+      userName: bookingPayload.userName || sessUser.name || 'Member',
+      userEmail: bookingPayload.userEmail || sessUser.email || '',
       workspaceName: bookingPayload.workspaceName || bookingPayload.title || 'Executive Desk',
       workspaceType: bookingPayload.workspaceType || bookingPayload.deskType || 'Dedicated Desk',
       bookingDate: bookingPayload.bookingDate || bookingPayload.date || new Date().toISOString().split('T')[0],
       arrivalTime: bookingPayload.arrivalTime || (bookingPayload.timeSlot ? bookingPayload.timeSlot.split('–')[0].trim() : '10:00 AM'),
-      duration: bookingPayload.duration || '3 Hours',
-      totalPrice: bookingPayload.totalAmount || bookingPayload.subtotal || '$148.50',
+      duration: bookingPayload.duration || '1 Hour',
+      totalPrice: bookingPayload.totalAmount || bookingPayload.subtotal || '$49.50',
       bookingStatus: 'Active',
       paymentStatus: 'Paid',
       ...bookingPayload
     };
 
-    // Send payload to Node.js + Express + MongoDB backend
+    let backendResult = null;
     try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
       const response = await fetch('http://localhost:5000/api/bookings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newBooking)
       });
       const result = await response.json();
-      if (result.success) {
+      if (response.ok && result.success) {
+        backendResult = result;
         console.log('✅ Booking successfully saved to MongoDB via Express API:', result.booking);
+      } else {
+        return result;
       }
     } catch (apiErr) {
       console.warn('⚠️ Express backend unreachable, using fallback sync:', apiErr.message);
@@ -685,7 +682,25 @@ const API = {
       localStorage.setItem('workhub_bookings_data', JSON.stringify(adminBookings));
     } catch(e){}
 
-    return Promise.resolve({ success: true, bookingId, booking: newBooking });
+    return backendResult || { success: true, bookingId, booking: newBooking };
+  },
+
+  async createPayment(paymentPayload) {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+      const response = await fetch('http://localhost:5000/api/payments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(paymentPayload)
+      });
+      const result = await response.json();
+      return result;
+    } catch(err) {
+      return { success: false, message: err.message };
+    }
   },
 
   async getBookingHistory() {

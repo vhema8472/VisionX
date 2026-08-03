@@ -41,9 +41,9 @@ function renderBookingDetails(b) {
   if (locationElem) locationElem.textContent = b.location || 'Manhattan Hub, NY';
   if (dateElem) dateElem.textContent = b.bookingDate || 'July 31, 2026';
   if (timeElem) timeElem.textContent = b.timeSlot || 'Full Day';
-  if (priceElem) priceElem.textContent = b.totalAmount || '$74.00';
-  if (nameElem) nameElem.textContent = b.userName || 'Sarah Jenkins';
-  if (emailElem) emailElem.textContent = b.userEmail || 'sarah.jenkins@cloudscale.ai';
+  const sessionUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
+  if (nameElem) nameElem.textContent = b.userName || sessionUser.name || 'Member';
+  if (emailElem) emailElem.textContent = b.userEmail || sessionUser.email || '';
   if (payElem) payElem.textContent = b.paymentMethod || 'Credit Card';
 
   const cancelBtn = document.getElementById('btn-cancel-this-booking');

@@ -5,10 +5,51 @@
 let activeWorkspace = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  initBookingDateDefault();
   await loadWorkspace();
   initBookingListeners();
   updateOrderSummary();
 });
+
+// Set default date picker value to today's date dynamically and duration to 1 hour
+function initBookingDateDefault() {
+  const dateInput = document.getElementById('booking-date');
+  if (dateInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    if (!dateInput.value || dateInput.value < todayStr) {
+      dateInput.value = todayStr;
+    }
+    dateInput.min = todayStr;
+  }
+
+  const durationSelect = document.getElementById('booking-duration');
+  if (durationSelect) {
+    durationSelect.value = '1';
+  }
+}
+
+// Reset booking form helper
+window.resetBookingForm = function() {
+  const dateInput = document.getElementById('booking-date');
+  const durationSelect = document.getElementById('booking-duration');
+  const startTimeSelect = document.getElementById('start-time');
+  const requestInput = document.getElementById('special-request');
+
+  if (dateInput) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.value = todayStr;
+  }
+  if (durationSelect) durationSelect.value = '1';
+  if (startTimeSelect) startTimeSelect.value = '10:00';
+  if (requestInput) requestInput.value = '';
+
+  updateOrderSummary();
+};
 
 // 1. Load Workspace by URL parameter or sessionStorage
 async function loadWorkspace() {
@@ -78,9 +119,12 @@ function initBookingListeners() {
 async function updateOrderSummary() {
   if (!activeWorkspace) return;
 
-  const dateStr = document.getElementById('booking-date')?.value || '2026-07-31';
+  const dateInput = document.getElementById('booking-date');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const dateStr = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+
   const startTime = document.getElementById('start-time')?.value || '10:00';
-  const duration = parseInt(document.getElementById('booking-duration')?.value || '3', 10);
+  const duration = parseInt(document.getElementById('booking-duration')?.value || '1', 10);
 
   // 1. Calculate End Time
   const rangeInfo = calculateEndTime(startTime, duration);
@@ -276,9 +320,12 @@ async function handleConfirmBookingSubmit(e) {
 
   if (!activeWorkspace) return;
 
-  const dateStr = document.getElementById('booking-date')?.value || '2026-07-31';
+  const dateInput = document.getElementById('booking-date');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const dateStr = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+
   const startTime = document.getElementById('start-time')?.value || '10:00';
-  const duration = parseInt(document.getElementById('booking-duration')?.value || '3', 10);
+  const duration = parseInt(document.getElementById('booking-duration')?.value || '1', 10);
 
   const rangeInfo = calculateEndTime(startTime, duration);
   const subtotal = calculateSubtotal(activeWorkspace.hourlyPrice, duration);
@@ -296,6 +343,8 @@ async function handleConfirmBookingSubmit(e) {
     updateOrderSummary();
     return;
   }
+
+  const sessUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
 
   // Save Booking Payload with EXACT required fields for payment.html
   const checkoutData = {
@@ -315,8 +364,8 @@ async function handleConfirmBookingSubmit(e) {
     subtotal: `$${subtotal.toFixed(2)}`,
     taxes: `$${serviceFee.toFixed(2)}`,
     totalAmount: `$${totalPayable.toFixed(2)}`,
-    userName: 'Sarah Jenkins',
-    userEmail: 'sarah.jenkins@cloudscale.ai'
+    userName: sessUser.name || 'Member',
+    userEmail: sessUser.email || ''
   };
 
   sessionStorage.setItem('pendingCheckout', JSON.stringify(checkoutData));

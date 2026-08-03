@@ -11,6 +11,10 @@ const { authenticateUser, requireAdmin } = require('../middleware/authMiddleware
 // Dashboard Overview & Stats (Admin Only)
 router.get('/dashboard/stats', authenticateUser, requireAdmin, adminController.getDashboardStats);
 router.get('/stats', authenticateUser, requireAdmin, adminController.getDashboardStats);
+router.get('/dashboard/revenue', authenticateUser, requireAdmin, adminController.getRevenueOverview);
+router.get('/revenue-overview', authenticateUser, requireAdmin, adminController.getRevenueOverview);
+router.get('/dashboard/weekly-bookings', authenticateUser, requireAdmin, adminController.getWeeklyBookings);
+router.get('/weekly-bookings', authenticateUser, requireAdmin, adminController.getWeeklyBookings);
 
 // Bookings Overview
 router.get('/bookings', authenticateUser, requireAdmin, adminController.getAdminBookings);

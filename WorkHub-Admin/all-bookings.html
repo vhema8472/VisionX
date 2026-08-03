@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Bookings - WorkHub Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR (Unchanged Sidebar Navigation) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">W</div>
+        <div class="logo-text-group">
+          <span class="logo-title">WorkHub</span>
+          <span class="logo-subtitle">Management Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Main Navigation</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>User Management</span>
+        </a>
+        <a href="membership.html" class="nav-item">
+          <span class="nav-icon">👑</span>
+          <span>Membership</span>
+        </a>
+        <a href="desks.html" class="nav-item">
+          <span class="nav-icon">🖥️</span>
+          <span>Desk Management</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payment Management</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Reports & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+
+        <div class="nav-label" style="margin-top:1rem;">System</div>
+        <a href="#" class="nav-item" onclick="showToast('Help Center available at support@workhub.com', 'info'); return false;">
+          <span class="nav-icon">❓</span>
+          <span>Support</span>
+        </a>
+        <a href="#" class="nav-item" onclick="logoutAdmin(); return false;">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Navigation">☰</button>
+          <div class="global-search-container">
+            <span class="global-search-icon">🔍</span>
+            <input type="text" class="global-search-input" id="bookings-search-input" placeholder="Search all bookings by user, ID, workspace...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-action-btn" onclick="showToast('WorkHub Admin Manual', 'info')" title="Help & Docs">❓</button>
+
+          <!-- Profile Menu -->
+          <div class="profile-menu-container">
+            <div id="profile-trigger" class="profile-trigger">
+              <div class="avatar">WA</div>
+              <div class="profile-info">
+                <span class="profile-name">WorkHub Admin</span>
+                <span class="profile-role">Super Admin</span>
+              </div>
+              <span style="font-size:0.75rem; color:var(--text-muted);">▼</span>
+            </div>
+
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="settings.html" class="dropdown-item">⚙️ Account Settings</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin()">🚪 Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container fade-in">
+        <!-- Breadcrumb & Header -->
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          <a href="dashboard.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Dashboard</a> &nbsp;&gt;&nbsp; <span>Recent Bookings</span> &nbsp;&gt;&nbsp; <strong style="color: var(--text-main);">All Bookings</strong>
+        </div>
+
+        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
+          <div>
+            <h1 class="font-bold" style="font-size: 1.6rem; letter-spacing: -0.5px;">All Workspace Bookings</h1>
+            <p class="text-muted" style="font-size: 0.88rem;">Complete history of workspace reservations from backend database.</p>
+          </div>
+          <div class="flex gap-3">
+            <a href="dashboard.html" class="btn btn-secondary">&larr; Back to Dashboard</a>
+            <button class="btn btn-primary" onclick="loadAllBookingsPage()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <!-- FILTER TOOLBAR -->
+        <div class="card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+            <div style="display: flex; gap: 1rem; align-items: center; flex: 1; min-width: 280px;">
+              <input type="text" id="booking-search-field" class="form-control" placeholder="🔍 Search by User, Email, Booking ID, or Workspace..." style="flex: 1;">
+              <select id="booking-status-filter" class="form-select" style="width: 180px;">
+                <option value="">All Statuses</option>
+                <option value="Active">Active / Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); font-weight: 600;" id="booking-count-badge">
+              Loading total records...
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>User Name</th>
+                  <th>User Email</th>
+                  <th>Workspace</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Time Slot</th>
+                  <th>Duration</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                </tr>
+              </thead>
+              <tbody id="all-bookings-tbody">
+                <tr>
+                  <td colspan="11" style="text-align:center; padding: 2rem; color: var(--text-muted);">
+                    ⏳ Loading bookings from database...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); font-size: 0.88rem;">
+            <span id="all-bookings-pagination-info" style="color: var(--text-muted);">Showing 1 to 10 of records</span>
+            <div class="flex gap-2" id="all-bookings-pagination-btns">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    let allBookingsData = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkAuth(false);
+      await loadAllBookingsPage();
+
+      document.getElementById('booking-search-field')?.addEventListener('input', filterAndRenderBookings);
+      document.getElementById('booking-status-filter')?.addEventListener('change', filterAndRenderBookings);
+    });
+
+    async function loadAllBookingsPage() {
+      const tbody = document.getElementById('all-bookings-tbody');
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding: 2rem; color: var(--text-muted);">⏳ Loading bookings from database...</td></tr>`;
+      }
+
+      try {
+        const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+        const res = await fetch('http://localhost:5000/api/admin/bookings', {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        const data = await res.json();
+        
+        if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
+          allBookingsData = data.bookings;
+        } else {
+          allBookingsData = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS) || [];
+        }
+      } catch(e) {
+        allBookingsData = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS) || [];
+      }
+
+      filterAndRenderBookings();
+    }
+
+    function filterAndRenderBookings() {
+      const searchTerm = document.getElementById('booking-search-field')?.value.toLowerCase().trim() || '';
+      const statusFilter = document.getElementById('booking-status-filter')?.value || '';
+
+      const filtered = allBookingsData.filter(b => {
+        const uName = (b.userName || b.user || '').toLowerCase();
+        const uEmail = (b.userEmail || b.email || '').toLowerCase();
+        const bId = (b.bookingId || b.id || '').toLowerCase();
+        const wsName = (b.workspaceName || b.space || b.workspaceType || '').toLowerCase();
+        const bStatus = (b.bookingStatus || b.status || '').toLowerCase();
+
+        const matchesSearch = !searchTerm || uName.includes(searchTerm) || uEmail.includes(searchTerm) || bId.includes(searchTerm) || wsName.includes(searchTerm);
+        const matchesStatus = !statusFilter || bStatus === statusFilter.toLowerCase() || (statusFilter === 'Active' && (bStatus === 'active' || bStatus === 'confirmed'));
+
+        return matchesSearch && matchesStatus;
+      });
+
+      const countBadge = document.getElementById('booking-count-badge');
+      if (countBadge) countBadge.textContent = `Total Records: ${filtered.length}`;
+
+      const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const paginated = filtered.slice(startIndex, startIndex + itemsPerPage);
+
+      const tbody = document.getElementById('all-bookings-tbody');
+      if (!tbody) return;
+
+      if (paginated.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding: 2.5rem; color: var(--text-muted);">No booking records found matching your filters.</td></tr>`;
+      } else {
+        tbody.innerHTML = paginated.map(b => {
+          const statusBadge = (b.bookingStatus === 'cancelled' || b.status === 'cancelled') ? 'badge-occupied' :
+                              (b.bookingStatus === 'pending') ? 'badge-booked' : 'badge-available';
+          const payBadge = (b.paymentStatus === 'Paid' || b.paymentStatus === 'paid') ? 'badge-success' : 'badge-warning';
+          const priceStr = typeof b.totalAmount === 'number' ? `$${b.totalAmount.toFixed(2)}` : (b.totalPrice || b.totalAmount || '$45.00');
+
+          return `
+            <tr>
+              <td><strong>${b.bookingId || b.id || 'BK-1001'}</strong></td>
+              <td><strong>${b.userName || b.user || 'Member'}</strong></td>
+              <td>${b.userEmail || b.email || 'user@example.com'}</td>
+              <td>${b.workspaceName || b.space || 'Executive Desk'}</td>
+              <td><span class="badge badge-info">${b.workspaceType || b.space || 'Hot Desk'}</span></td>
+              <td>${b.date || b.bookingDate || new Date().toISOString().split('T')[0]}</td>
+              <td>${b.timeSlot || `${b.startTime || b.arrivalTime || '09:00 AM'} – ${b.endTime || '10:00 AM'}`}</td>
+              <td>${b.duration || '1 Hour'}</td>
+              <td><strong>${priceStr}</strong></td>
+              <td><span class="badge ${statusBadge}">${b.bookingStatus || b.status || 'Confirmed'}</span></td>
+              <td><span class="badge ${payBadge}">${b.paymentStatus || 'Paid'}</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Pagination info
+      const pagInfo = document.getElementById('all-bookings-pagination-info');
+      if (pagInfo) {
+        const endIdx = Math.min(startIndex + itemsPerPage, filtered.length);
+        pagInfo.textContent = `Showing ${filtered.length > 0 ? startIndex + 1 : 0} to ${endIdx} of ${filtered.length} records`;
+      }
+
+      const pagBtns = document.getElementById('all-bookings-pagination-btns');
+      if (pagBtns) {
+        pagBtns.innerHTML = `
+          <button class="btn btn-secondary btn-sm" ${currentPage <= 1 ? 'disabled' : ''} onclick="changePage(-1)">❮ Prev</button>
+          <span style="align-self:center; font-weight:700; font-size:0.85rem; padding: 0 0.5rem;">Page ${currentPage} of ${totalPages}</span>
+          <button class="btn btn-secondary btn-sm" ${currentPage >= totalPages ? 'disabled' : ''} onclick="changePage(1)">Next ❯</button>
+        `;
+      }
+    }
+
+    function changePage(delta) {
+      currentPage += delta;
+      filterAndRenderBookings();
+    }
+  </script>
+</body>
+</html>
