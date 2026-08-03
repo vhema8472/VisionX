@@ -173,8 +173,8 @@ async function loadRecentTables() {
             <td><strong>${inv.paymentId || inv.id || 'PAY-1001'}</strong></td>
             <td>${inv.userName || inv.customer || 'Member'}</td>
             <td><strong>${amtStr}</strong></td>
-            <td>${inv.paymentMethod || inv.method || 'Credit Card'}</td>
-            <td><span class="badge badge-${(inv.status || 'paid').toLowerCase()}">${inv.status || 'Paid'}</span></td>
+            <td>${inv.paymentMethod || inv.method || 'Demo Payment'}</td>
+            <td><span class="badge badge-success">${inv.status || 'Demo Paid'}</span></td>
           </tr>
         `;
       }).join('');

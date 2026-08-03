@@ -33,7 +33,7 @@ const PaymentSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      default: 'Credit Card'
+      default: 'Demo Payment'
     },
     transactionId: {
       type: String,
@@ -41,8 +41,8 @@ const PaymentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
-      default: 'paid'
+      enum: ['pending', 'paid', 'failed', 'refunded', 'Demo Paid'],
+      default: 'Demo Paid'
     }
   },
   {

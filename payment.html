@@ -63,99 +63,31 @@
       <div class="payment-left-col">
         <div class="payment-methods-card">
           <!-- Demo Payment Banner -->
-          <div style="background: var(--bg-subtle); border: 1px solid var(--primary-light); border-left: 4px solid var(--primary); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: var(--text-main);">
-            <div style="display:flex; align-items:center; gap:0.5rem; font-weight:700; margin-bottom:0.25rem; color:var(--primary-dark);">
-              <span>ℹ️</span> Demo Payment &amp; Reservation Simulation
+          <div style="background: var(--bg-subtle); border: 1px solid var(--primary-light); border-left: 4px solid var(--primary); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-main);">
+            <div style="display:flex; align-items:center; gap:0.5rem; font-weight:700; margin-bottom:0.35rem; color:var(--primary-dark); font-size: 1rem;">
+              <span>ℹ️</span> Demo Payment Mode
             </div>
-            <p style="margin:0; font-size:0.83rem; color:var(--text-muted);">
-              This application operates in <strong>Demo Mode</strong>. No real financial or payment information is collected. Select a demo payment option below to complete your reservation.
+            <p style="margin:0; font-size:0.88rem; color:var(--text-muted); line-height: 1.5;">
+              Demo Payment Only. No real payment information is collected.
             </p>
           </div>
 
-          <h2>💳 Select Payment Method</h2>
+          <h2 style="margin-bottom: 1.25rem;">📝 Reservation Customer Details</h2>
 
-          <!-- Payment Tabs (Demo Gateway, UPI, Net Banking, Wallet, Pay at Center) -->
-          <div class="payment-options-nav">
-            <button type="button" class="payment-tab-btn active" data-method="demogateway">
-              <span class="tab-icon">⚡</span>
-              <span>Demo Gateway</span>
-            </button>
-            <button type="button" class="payment-tab-btn" data-method="upi">
-              <span class="tab-icon">📱</span>
-              <span>UPI (Demo)</span>
-            </button>
-            <button type="button" class="payment-tab-btn" data-method="netbank">
-              <span class="tab-icon">🏛️</span>
-              <span>Net Banking</span>
-            </button>
-            <button type="button" class="payment-tab-btn" data-method="wallet">
-              <span class="tab-icon">👛</span>
-              <span>Wallet</span>
-            </button>
-            <button type="button" class="payment-tab-btn" data-method="cash">
-              <span class="tab-icon">💵</span>
-              <span>Pay at Center</span>
-            </button>
-          </div>
-
-          <!-- Panel 1: Instant Demo Gateway (Active by Default) -->
-          <div class="payment-panel active" id="panel-demogateway">
-            <div style="text-align:center; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px dashed var(--border-color);">
-              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚡</div>
-              <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">1-Click Demo Checkout</h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 400px; margin: 0 auto 1.25rem;">
-                Simulate instant payment confirmation. A demo transaction ID will be generated and saved to your booking profile.
-              </p>
-              <div style="display:inline-block; background: var(--bg-card); padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.82rem; color: var(--primary-dark); font-weight: 600;">
-                Mode: Sandbox Test Payment
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel 2: UPI (Demo) -->
-          <div class="payment-panel" id="panel-upi">
-            <div class="upi-qr-box" style="text-align:center; padding: 1.25rem; background: var(--bg-subtle); border-radius: var(--radius-md); margin-bottom: 1rem;">
-              <div class="upi-qr-code" style="font-size: 2rem;">📱</div>
-              <h4 style="font-size: 0.95rem; margin-bottom: 0.25rem;">Demo UPI Payment</h4>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">Virtual VPA: <strong>workhub@demo</strong></p>
+          <form id="demo-payment-form" onsubmit="return false;">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label class="form-label" style="font-weight: 700;">Customer Name <span style="color:red;">*</span></label>
+              <input type="text" class="form-control" id="customer-name" placeholder="Enter Customer Name" style="font-size: 1rem; padding: 0.75rem 1rem;" required>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Enter Demo VPA / UPI ID</label>
-              <input type="text" class="form-control" placeholder="user@upi" id="upi-id-input" value="member@demoupi">
-            </div>
-          </div>
-
-          <!-- Panel 3: Net Banking (Demo) -->
-          <div class="payment-panel" id="panel-netbank">
-            <label class="form-label" style="margin-bottom: 0.75rem;">Select Demo Bank</label>
-            <div class="bank-select-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
-              <button type="button" class="bank-option-btn selected" data-bank="HDFC Bank">HDFC Bank</button>
-              <button type="button" class="bank-option-btn" data-bank="ICICI Bank">ICICI Bank</button>
-              <button type="button" class="bank-option-btn" data-bank="SBI Bank">SBI Bank</button>
-              <button type="button" class="bank-option-btn" data-bank="Axis Bank">Axis Bank</button>
-            </div>
-          </div>
-
-          <!-- Panel 4: Wallet (Demo) -->
-          <div class="payment-panel" id="panel-wallet">
-            <label class="form-label" style="margin-bottom: 0.75rem;">Select Demo Wallet</label>
-            <div class="bank-select-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem;">
-              <button type="button" class="bank-option-btn selected" data-wallet="Google Pay">Google Pay</button>
-              <button type="button" class="bank-option-btn" data-wallet="PhonePe">PhonePe</button>
-              <button type="button" class="bank-option-btn" data-wallet="Paytm">Paytm Wallet</button>
-            </div>
-          </div>
-
-          <!-- Panel 5: Pay at Center -->
-          <div class="payment-panel" id="panel-cash">
-            <div style="padding: 1.25rem; background: var(--bg-subtle); border-radius: var(--radius-md); font-size: 0.88rem; color: var(--text-main);">
-              <h4 style="margin-bottom: 0.5rem;">💵 Pay at Workspace Front Desk</h4>
-              <p style="margin:0; font-size: 0.83rem; color: var(--text-muted);">
-                Your reservation will be held as <strong>Confirmed</strong>. You can settle payment in cash or card upon arrival at the workspace.
+            <div style="padding: 1.25rem; background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px dashed var(--border-color); text-align: center; margin-bottom: 1rem;">
+              <div style="font-size: 2rem; margin-bottom: 0.25rem;">⚡</div>
+              <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Instant Sandbox Confirmation</h4>
+              <p style="font-size: 0.83rem; color: var(--text-muted); margin: 0;">
+                Clicking "Complete Booking" generates a demo transaction ID and saves your booking with status <strong>Demo Paid</strong>.
               </p>
             </div>
-          </div>
+          </form>
         </div>
 
         <!-- Security Trust Note -->
@@ -185,7 +117,7 @@
 
           <div class="payment-actions-bar">
             <button type="button" class="btn btn-secondary" id="btn-payment-back">&larr; Back</button>
-            <button type="button" class="btn btn-primary" id="btn-confirm-payment">Confirm Payment</button>
+            <button type="button" class="btn btn-primary" id="btn-confirm-payment">Complete Booking</button>
           </div>
         </div>
       </div>

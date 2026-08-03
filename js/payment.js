@@ -4,7 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   loadCheckoutSummary();
-  initPaymentTabSwitching();
   initPaymentConfirmation();
   initBackButton();
 });
@@ -71,33 +70,13 @@ function loadCheckoutSummary() {
   if (basePriceElem) basePriceElem.textContent = data.subtotal || data.basePrice || "$45.00";
   if (taxesElem) taxesElem.textContent = data.taxes || data.tax || "$4.50";
   if (totalPriceElem) totalPriceElem.textContent = data.totalAmount || "$49.50";
-}
 
-// Switch between Credit Card, Debit Card, UPI, and Net Banking tabs
-function initPaymentTabSwitching() {
-  const methodTabs = document.querySelectorAll('.payment-tab-btn, .payment-method-tab');
-  const formPanels = document.querySelectorAll('.payment-panel, .payment-form-panel');
-
-  methodTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      methodTabs.forEach(t => t.classList.remove('active'));
-      formPanels.forEach(p => p.classList.remove('active'));
-
-      tab.classList.add('active');
-      const method = tab.getAttribute('data-method') || tab.getAttribute('data-target')?.replace('panel-', '');
-      const targetPanel = document.getElementById(`panel-${method}`) || document.getElementById(tab.getAttribute('data-target'));
-      if (targetPanel) targetPanel.classList.add('active');
-    });
-  });
-
-  // Net banking bank option buttons
-  const bankBtns = document.querySelectorAll('.bank-option-btn');
-  bankBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      bankBtns.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
-  });
+  // Pre-fill Customer Name input
+  const custInput = document.getElementById('customer-name');
+  if (custInput) {
+    const sessUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
+    custInput.value = data.userName || sessUser.name || '';
+  }
 }
 
 // Back Button Navigation
@@ -110,7 +89,7 @@ function initBackButton() {
   }
 }
 
-// Payment Form Submission & Backend Sync
+// Demo Payment Form Submission & Backend Sync
 function initPaymentConfirmation() {
   const payBtn = document.getElementById('btn-confirm-payment') || document.getElementById('btn-pay-now');
   if (!payBtn) return;
@@ -124,19 +103,17 @@ function initPaymentConfirmation() {
       try { pendingData = JSON.parse(pendingStr); } catch(e){}
     }
 
-    // Determine active payment method
-    const activeTab = document.querySelector('.payment-tab-btn.active, .payment-method-tab.active');
-    const method = activeTab ? (activeTab.getAttribute('data-method') || 'demogateway') : 'demogateway';
+    const customerInput = document.getElementById('customer-name');
+    const customerName = customerInput ? customerInput.value.trim() : '';
 
-    let paymentMethodLabel = 'Demo Payment Gateway';
-    if (method === 'demogateway') paymentMethodLabel = 'Demo Payment Gateway';
-    else if (method === 'upi') paymentMethodLabel = 'UPI (Demo)';
-    else if (method === 'netbank') paymentMethodLabel = 'Net Banking (Demo)';
-    else if (method === 'wallet') paymentMethodLabel = 'Wallet (Demo)';
-    else if (method === 'cash') paymentMethodLabel = 'Cash at Workspace';
+    if (!customerName) {
+      if (window.showToast) showToast('Please enter Customer Name.', 'error');
+      if (customerInput) customerInput.focus();
+      return;
+    }
 
     const bookingId = pendingData.bookingId || `BK-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const transactionId = `TXN-${Math.floor(100000 + Math.random() * 900000)}`;
+    const transactionId = `TXN-DEMO-${Math.floor(100000 + Math.random() * 900000)}`;
     const sessUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
 
     const confirmedBooking = {
@@ -153,30 +130,32 @@ function initPaymentConfirmation() {
       timeSlot: pendingData.timeRange || '10:00 AM – 11:00 AM',
       duration: pendingData.duration || '1 Hour',
       durationHours: pendingData.durationHours || 1,
-      userName: pendingData.userName || sessUser.name || 'Member',
-      userEmail: pendingData.userEmail || sessUser.email || '',
+      userName: customerName,
+      userEmail: pendingData.userEmail || sessUser.email || 'customer@example.com',
       totalPrice: pendingData.totalAmount || '$49.50',
       totalAmount: pendingData.totalAmount || '$49.50',
       bookingStatus: 'Active',
-      paymentStatus: 'Paid',
-      paymentMethod: paymentMethodLabel,
+      paymentStatus: 'Demo Paid',
+      paymentMethod: 'Demo Payment',
       transactionId
     };
 
     payBtn.disabled = true;
-    payBtn.textContent = 'Processing Payment...';
+    payBtn.textContent = 'Completing Booking...';
     if (window.showLoading) showLoading();
 
     try {
-      // 1. Create & Confirm Booking in Backend
+      // 1. Create & Confirm Booking in Backend / MongoDB
       const bookingRes = await API.createBooking(confirmedBooking);
 
       if (bookingRes && bookingRes.success) {
-        // 2. Create Payment Record in Backend
+        // 2. Create Demo Payment Record in Backend / MongoDB
         const paymentPayload = {
           bookingId: bookingRes.bookingId || bookingId,
+          userName: customerName,
           amount: parseFloat(String(confirmedBooking.totalAmount).replace(/[^0-9.-]+/g, "")) || 49.50,
-          paymentMethod: paymentMethodLabel,
+          paymentMethod: 'Demo Payment',
+          status: 'Demo Paid',
           transactionId
         };
 
@@ -189,22 +168,22 @@ function initPaymentConfirmation() {
           bookingId: bookingRes.bookingId || bookingId
         }));
 
-        if (window.showToast) showToast('Payment processed successfully! Booking confirmed.', 'success');
+        if (window.showToast) showToast('Booking completed successfully! (Demo Mode)', 'success');
         
         setTimeout(() => {
           window.location.href = 'booking-success.html';
         }, 800);
       } else {
-        const errorMsg = (bookingRes && bookingRes.message) ? bookingRes.message : 'Payment confirmation failed.';
+        const errorMsg = (bookingRes && bookingRes.message) ? bookingRes.message : 'Booking completion failed.';
         if (window.showToast) showToast(`❌ ${errorMsg}`, 'error');
         payBtn.disabled = false;
-        payBtn.textContent = 'Confirm Payment';
+        payBtn.textContent = 'Complete Booking';
       }
     } catch (err) {
-      console.error('Payment Error:', err);
-      if (window.showToast) showToast(err.message || 'Payment confirmation failed. Please try again.', 'error');
+      console.error('Booking Error:', err);
+      if (window.showToast) showToast(err.message || 'Booking completion failed. Please try again.', 'error');
       payBtn.disabled = false;
-      payBtn.textContent = 'Confirm Payment';
+      payBtn.textContent = 'Complete Booking';
     } finally {
       if (window.hideLoading) hideLoading();
     }

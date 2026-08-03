@@ -250,9 +250,10 @@
       } else {
         tbody.innerHTML = paginated.map(t => {
           const amtStr = typeof t.amount === 'number' ? `$${t.amount.toFixed(2)}` : (t.amount || '$49.50');
-          const statusVal = t.status || 'paid';
-          const statusBadge = (statusVal.toLowerCase() === 'paid') ? 'badge-success' : 'badge-warning';
+          const statusVal = t.status || 'Demo Paid';
+          const statusBadge = (statusVal.toLowerCase().includes('paid')) ? 'badge-success' : 'badge-warning';
           const dateStr = t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-US') : (t.date || new Date().toLocaleDateString('en-US'));
+          const methodVal = t.paymentMethod || t.method || 'Demo Payment';
 
           return `
             <tr>
@@ -261,8 +262,8 @@
               <td><strong>${t.userName || t.customer || 'Member'}</strong></td>
               <td><strong>${amtStr}</strong></td>
               <td>${t.currency || 'USD'}</td>
-              <td><span class="badge badge-info">${t.paymentMethod || t.method || 'Credit Card'}</span></td>
-              <td><code>${t.transactionId || 'TXN-908123'}</code></td>
+              <td><span class="badge badge-info">${methodVal}</span></td>
+              <td><code>${t.transactionId || 'TXN-DEMO-908123'}</code></td>
               <td><span class="badge ${statusBadge}">${statusVal.toUpperCase()}</span></td>
               <td>${dateStr}</td>
             </tr>
