@@ -140,6 +140,7 @@ function initPaymentConfirmation() {
 
     const confirmedBooking = {
       bookingId,
+      deskId: pendingData.deskId || pendingData.workspaceId || 'D-101',
       workspaceId: pendingData.workspaceId || 'WS001',
       workspaceName: pendingData.workspaceName || 'Executive Private Cabin P-12',
       workspaceType: pendingData.workspaceType || 'Private Cabin',

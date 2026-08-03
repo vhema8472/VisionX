@@ -262,21 +262,25 @@
             </div>
           </div>
 
-          <!-- Quick Actions Grid -->
-          <div class="card">
-            <h3 class="chart-title" style="margin-bottom:1rem;">Quick Workspace Actions</h3>
+          <div class="table-card">
+            <div class="table-header-toolbar">
+              <div class="table-title-group">
+                <h3>Quick Management Actions</h3>
+                <p>Shortcuts for daily operations</p>
+              </div>
+            </div>
             <div class="quick-actions-grid">
               <button class="quick-action-btn" onclick="openModal('quick-booking-modal')">
                 <span class="quick-action-icon">➕</span>
-                <span>New Booking</span>
+                <span>Quick Reserve</span>
               </button>
               <button class="quick-action-btn" onclick="window.location.href='users.html'">
                 <span class="quick-action-icon">👤</span>
-                <span>Add User</span>
+                <span>Add Member</span>
               </button>
-              <button class="quick-action-btn" onclick="window.location.href='payments.html'">
-                <span class="quick-action-icon">🧾</span>
-                <span>Create Invoice</span>
+              <button class="quick-action-btn" onclick="window.location.href='desks.html'">
+                <span class="quick-action-icon">💻</span>
+                <span>Manage Desks</span>
               </button>
               <button class="quick-action-btn" onclick="window.location.href='reports.html'">
                 <span class="quick-action-icon">📊</span>
@@ -308,9 +312,15 @@
         <button class="modal-close-btn" onclick="closeModal('quick-booking-modal')">✕</button>
       </div>
       <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">User Name</label>
-          <input type="text" id="qb-customer" class="form-control" placeholder="e.g. Alex Johnson">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">User Name <span style="color: var(--status-occupied);">*</span></label>
+            <input type="text" id="qb-customer" class="form-control" placeholder="e.g. Arun Kumar" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Desk ID</label>
+            <input type="text" id="qb-desk-id" class="form-control" placeholder="e.g. D-205">
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">

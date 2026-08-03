@@ -18,6 +18,7 @@ router.get('/weekly-bookings', authenticateUser, requireAdmin, adminController.g
 
 // Bookings Overview
 router.get('/bookings', authenticateUser, requireAdmin, adminController.getAdminBookings);
+router.post('/bookings', authenticateUser, requireAdmin, adminController.createAdminBooking);
 router.get('/bookings/recent', authenticateUser, requireAdmin, adminController.getRecentBookings);
 router.get('/recent-bookings', authenticateUser, requireAdmin, adminController.getRecentBookings);
 router.put('/bookings/:id/status', authenticateUser, requireAdmin, adminController.updateBookingStatus);

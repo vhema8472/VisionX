@@ -148,9 +148,11 @@ async function loadRecentTables() {
     // Render Recent Bookings Table
     const bookingTbody = document.getElementById('dashboard-bookings-tbody');
     if (bookingTbody && bData.success && Array.isArray(bData.bookings)) {
-      bookingTbody.innerHTML = bData.bookings.slice(0, 5).map(b => `
+      bookingTbody.innerHTML = bData.bookings.slice(0, 8).map(b => `
         <tr>
+          <td><strong style="color:var(--primary); font-family:monospace;">${b.bookingId || b.id || 'BK-1001'}</strong></td>
           <td><strong>${b.userName || b.user || 'Member'}</strong></td>
+          <td><span class="badge badge-subtle" style="font-weight:700;">${b.deskId || b.workspaceId || 'D-101'}</span></td>
           <td>${b.startTime || b.arrivalTime || '09:00 AM'}</td>
           <td>${b.date || b.bookingDate || new Date().toISOString().split('T')[0]}</td>
           <td>${b.duration || '1 Hour'}</td>
@@ -182,11 +184,13 @@ async function loadRecentTables() {
     if (bookingTbody) {
       bookingTbody.innerHTML = bookings.slice(0, 5).map(b => `
         <tr>
-          <td><strong>${b.user}</strong></td>
+          <td><strong style="color:var(--primary); font-family:monospace;">${b.bookingId || b.id || 'BK-9901'}</strong></td>
+          <td><strong>${b.userName || b.user || 'Member'}</strong></td>
+          <td><span class="badge badge-subtle">${b.deskId || 'D-101'}</span></td>
           <td>${b.arrivalTime || '09:00 AM'}</td>
-          <td>${b.date}</td>
-          <td>${b.duration}</td>
-          <td><span class="badge badge-info">${b.workspaceType || b.space}</span></td>
+          <td>${b.date || new Date().toISOString().split('T')[0]}</td>
+          <td>${b.duration || '1 Hour'}</td>
+          <td><span class="badge badge-info">${b.workspaceType || b.space || 'Hot Desk'}</span></td>
         </tr>
       `).join('');
     }
@@ -194,31 +198,35 @@ async function loadRecentTables() {
 }
 
 async function createNewDashboardBooking() {
-  const userName = document.getElementById('qb-customer')?.value.trim() || 'Alex Johnson';
+  const userName = document.getElementById('qb-customer')?.value.trim();
+  if (!userName) {
+    if (window.showToast) showToast('User Name is required.', 'error');
+    return;
+  }
+  const deskId = document.getElementById('qb-desk-id')?.value.trim() || 'D-205';
   const arrivalTime = document.getElementById('qb-arrival-time')?.value.trim() || '09:00 AM';
-  const bookingDate = document.getElementById('qb-date')?.value.trim() || '2026-08-01';
+  const bookingDate = document.getElementById('qb-date')?.value.trim() || new Date().toISOString().split('T')[0];
   const duration = document.getElementById('qb-duration')?.value.trim() || '1 Hour';
   const workspaceType = document.getElementById('qb-workspace-type')?.value || 'Dedicated Desk';
 
   const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
 
   const newBookingPayload = {
-    bookingId: `BK-${Math.floor(9000 + Math.random() * 999)}`,
     userName,
-    user: userName,
+    deskId,
     arrivalTime,
+    startTime: arrivalTime,
     bookingDate,
     date: bookingDate,
     duration,
     workspaceType,
-    workspaceName: workspaceType,
-    totalPrice: '$45.00',
-    bookingStatus: 'Active',
-    paymentStatus: 'Paid'
+    workspaceName: `${workspaceType} (${deskId})`,
+    bookingStatus: 'confirmed',
+    paymentStatus: 'paid'
   };
 
   try {
-    await fetch('http://localhost:5000/api/bookings', {
+    const res = await fetch('http://localhost:5000/api/admin/bookings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -226,22 +234,12 @@ async function createNewDashboardBooking() {
       },
       body: JSON.stringify(newBookingPayload)
     });
+    const data = await res.json();
+    if (data.success) {
+      if (window.showToast) showToast(`Booking ${data.bookingId || ''} created for ${userName}!`, 'success');
+    }
   } catch (e) {}
 
-  const bookings = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS);
-  bookings.unshift({
-    id: newBookingPayload.bookingId,
-    user: userName,
-    arrivalTime,
-    date: bookingDate,
-    duration,
-    workspaceType,
-    space: workspaceType,
-    status: 'Active'
-  });
-  WorkHubStore.set(WorkHubStore.KEYS.BOOKINGS, bookings);
-
-  closeModal('quick-booking-modal');
-  showToast('New booking added to Dashboard!', 'success');
-  loadRecentTables();
+  if (window.closeModal) closeModal('quick-booking-modal');
+  await loadRecentTables();
 }

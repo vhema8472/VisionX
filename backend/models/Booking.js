@@ -5,21 +5,28 @@ const BookingSchema = new mongoose.Schema(
     bookingId: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      index: true
     },
     userId: {
       type: String,
-      required: true
-    },
-    workspaceId: {
-      type: String,
-      required: true
+      required: true,
+      index: true
     },
     userName: {
       type: String,
       required: true
     },
     userEmail: {
+      type: String,
+      required: true
+    },
+    deskId: {
+      type: String,
+      default: 'D-101',
+      index: true
+    },
+    workspaceId: {
       type: String,
       required: true
     },
@@ -38,7 +45,8 @@ const BookingSchema = new mongoose.Schema(
     },
     date: {
       type: String,
-      required: true
+      required: true,
+      index: true
     },
     startTime: {
       type: String,
@@ -78,13 +86,22 @@ const BookingSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
-      default: 'pending'
+      enum: ['pending', 'paid', 'failed', 'refunded', 'Pending', 'Paid'],
+      default: 'paid'
     },
     bookingStatus: {
       type: String,
-      enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+      enum: ['pending', 'confirmed', 'cancelled', 'completed', 'active', 'Active'],
       default: 'confirmed'
+    },
+    createdBy: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user'
+    },
+    createdByAdminId: {
+      type: String,
+      default: ''
     }
   },
   {
@@ -96,6 +113,7 @@ const BookingSchema = new mongoose.Schema(
 BookingSchema.index({ userId: 1, createdAt: -1 });
 BookingSchema.index({ workspaceId: 1, date: 1, bookingStatus: 1 });
 BookingSchema.index({ date: 1 });
+BookingSchema.index({ deskId: 1 });
 BookingSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Booking', BookingSchema);

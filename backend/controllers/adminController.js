@@ -353,3 +353,102 @@ exports.getWeeklyBookings = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to fetch weekly bookings' });
   }
 };
+
+// @desc    Create manual booking (Admin)
+// @route   POST /api/admin/bookings
+exports.createAdminBooking = async (req, res) => {
+  try {
+    const {
+      userName,
+      userEmail,
+      deskId,
+      workspaceId,
+      workspaceType,
+      date,
+      bookingDate,
+      startTime,
+      arrivalTime,
+      duration,
+      durationHours,
+      paymentStatus,
+      bookingStatus,
+      totalAmount
+    } = req.body;
+
+    const cleanUserName = (userName || '').trim();
+    if (!cleanUserName) {
+      return res.status(400).json({ success: false, message: 'User Name is required.' });
+    }
+
+    const finalDeskId = deskId || workspaceId || 'D-101';
+    const finalWorkspaceId = workspaceId || finalDeskId || 'WS-001';
+    const finalDate = date || bookingDate || new Date().toISOString().split('T')[0];
+    const finalStartTime = startTime || arrivalTime || '10:00 AM';
+    let parsedDuration = parseInt(durationHours || duration, 10) || 1;
+    const finalDurationStr = `${parsedDuration} ${parsedDuration === 1 ? 'Hour' : 'Hours'}`;
+    const finalWorkspaceType = workspaceType || 'Hot Desk';
+
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const randomHex = Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase().padStart(4, '0');
+    const bookingId = `BK-${dateStr}-${randomHex}`;
+    const paymentId = `PAY-${dateStr}-${randomHex}`;
+    const amount = parseFloat(totalAmount) || (parsedDuration * 25.0);
+
+    const newDoc = {
+      bookingId,
+      userId: (req.user && req.user.userId) ? req.user.userId : 'USR-ADMIN',
+      userName: cleanUserName,
+      userEmail: userEmail || 'member@workhub.io',
+      deskId: finalDeskId,
+      workspaceId: finalWorkspaceId,
+      workspaceName: `${finalWorkspaceType} (${finalDeskId})`,
+      workspaceType: finalWorkspaceType,
+      bookingType: 'desk',
+      date: finalDate,
+      startTime: finalStartTime,
+      endTime: finalStartTime,
+      duration: finalDurationStr,
+      hourlyRate: 25.0,
+      subtotal: amount,
+      serviceFee: 0.0,
+      totalAmount: amount,
+      paymentId,
+      paymentStatus: paymentStatus || 'paid',
+      bookingStatus: bookingStatus || 'confirmed',
+      createdBy: 'admin',
+      createdByAdminId: (req.user && req.user.userId) ? req.user.userId : 'USR-ADMIN',
+      createdAt: new Date()
+    };
+
+    const { getSharedBookings } = require('./bookingController');
+    const sharedStore = getSharedBookings();
+    if (sharedStore) {
+      sharedStore.unshift(newDoc);
+    }
+
+    let saved = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        saved = await Booking.create(newDoc);
+        await Payment.create({
+          paymentId,
+          bookingId,
+          userId: newDoc.userId,
+          amount,
+          currency: 'USD',
+          paymentMethod: 'Cash/Admin',
+          status: paymentStatus || 'paid'
+        });
+      } catch(e) {}
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Admin booking created successfully',
+      bookingId,
+      booking: saved || newDoc
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create admin booking', error: error.message });
+  }
+};

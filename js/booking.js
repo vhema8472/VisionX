@@ -31,6 +31,12 @@ function initBookingDateDefault() {
   if (durationSelect) {
     durationSelect.value = '1';
   }
+
+  const userNameInput = document.getElementById('booking-user-name');
+  if (userNameInput && !userNameInput.value.trim()) {
+    const sessUser = JSON.parse(localStorage.getItem('workhub_user_session') || '{}');
+    if (sessUser.name) userNameInput.value = sessUser.name;
+  }
 }
 
 // Reset booking form helper
@@ -320,6 +326,20 @@ async function handleConfirmBookingSubmit(e) {
 
   if (!activeWorkspace) return;
 
+  const userNameInput = document.getElementById('booking-user-name');
+  const enteredUserName = userNameInput ? userNameInput.value.trim() : '';
+
+  if (!enteredUserName) {
+    showToast('Please enter your name.', 'error');
+    if (userNameInput) {
+      userNameInput.focus();
+      userNameInput.style.borderColor = 'var(--status-occupied)';
+    }
+    return;
+  } else if (userNameInput) {
+    userNameInput.style.borderColor = 'var(--border-color)';
+  }
+
   const dateInput = document.getElementById('booking-date');
   const todayStr = new Date().toISOString().split('T')[0];
   const dateStr = (dateInput && dateInput.value) ? dateInput.value : todayStr;
@@ -349,7 +369,8 @@ async function handleConfirmBookingSubmit(e) {
   // Save Booking Payload with EXACT required fields for payment.html
   const checkoutData = {
     type: 'desk',
-    workspaceId: activeWorkspace.id,
+    deskId: activeWorkspace.workspaceId || activeWorkspace.id || 'D-101',
+    workspaceId: activeWorkspace.id || activeWorkspace.workspaceId || 'WS-001',
     workspaceName: activeWorkspace.name,
     workspaceType: activeWorkspace.typeLabel || activeWorkspace.type,
     location: activeWorkspace.hubName || activeWorkspace.location,
@@ -364,7 +385,7 @@ async function handleConfirmBookingSubmit(e) {
     subtotal: `$${subtotal.toFixed(2)}`,
     taxes: `$${serviceFee.toFixed(2)}`,
     totalAmount: `$${totalPayable.toFixed(2)}`,
-    userName: sessUser.name || 'Member',
+    userName: enteredUserName,
     userEmail: sessUser.email || ''
   };
 

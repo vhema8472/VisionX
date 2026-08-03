@@ -61,6 +61,7 @@ exports.createBooking = async (req, res) => {
       bookingId,
       userId,
       workspaceId,
+      deskId,
       userName,
       user,
       userEmail,
@@ -81,12 +82,19 @@ exports.createBooking = async (req, res) => {
     } = req.body;
 
     const finalUserId = (req.user && req.user.userId) ? req.user.userId : (userId || 'USR-GUEST');
-    const finalUserName = (req.user && req.user.name) ? req.user.name : (userName || user || 'Member');
-    const finalUserEmail = (req.user && req.user.email) ? req.user.email : (userEmail || '');
+    const finalUserName = (userName || user || (req.user && req.user.name) || '').trim();
+    if (!finalUserName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter your name.'
+      });
+    }
 
-    const finalWorkspaceId = workspaceId || 'WS-001';
-    const finalWorkspaceName = workspaceName || title || 'Executive Desk';
-    const finalWorkspaceType = workspaceType || deskType || 'Private Cabin';
+    const finalUserEmail = (req.user && req.user.email) ? req.user.email : (userEmail || '');
+    const finalDeskId = deskId || workspaceId || 'D-101';
+    const finalWorkspaceId = workspaceId || finalDeskId || 'WS-001';
+    const finalWorkspaceName = workspaceName || title || `Desk (${finalDeskId})`;
+    const finalWorkspaceType = workspaceType || deskType || 'Hot Desk';
 
     const finalDate = date || bookingDate || new Date().toISOString().split('T')[0];
     
@@ -99,7 +107,7 @@ exports.createBooking = async (req, res) => {
     // Calculate duration in hours
     let parsedDurationHours = parseInt(durationHours || duration, 10);
     if (isNaN(parsedDurationHours) || parsedDurationHours <= 0) {
-      parsedDurationHours = 3;
+      parsedDurationHours = 1;
     }
 
     const finalDurationStr = `${parsedDurationHours} ${parsedDurationHours === 1 ? 'Hour' : 'Hours'}`;
@@ -110,9 +118,9 @@ exports.createBooking = async (req, res) => {
     if (isNaN(calculatedRate)) {
       try {
         const ws = await Workspace.findOne({ workspaceId: finalWorkspaceId });
-        calculatedRate = ws ? ws.pricePerHour : 45.0;
+        calculatedRate = ws ? ws.pricePerHour : 25.0;
       } catch (e) {
-        calculatedRate = 45.0;
+        calculatedRate = 25.0;
       }
     }
 
@@ -128,7 +136,7 @@ exports.createBooking = async (req, res) => {
     // PREVENT DOUBLE BOOKING (SLOT OVERLAP CHECK)
     // ==========================================
     let existingBookings = sharedBookingsStore.filter(b => 
-      (b.workspaceId === finalWorkspaceId || b.workspaceName === finalWorkspaceName) &&
+      (b.deskId === finalDeskId || b.workspaceId === finalWorkspaceId || b.workspaceName === finalWorkspaceName) &&
       (b.date === finalDate || b.bookingDate === finalDate) &&
       b.bookingStatus !== 'cancelled'
     );
@@ -136,7 +144,7 @@ exports.createBooking = async (req, res) => {
     if (require('mongoose').connection.readyState === 1) {
       try {
         const mongoBookings = await Booking.find({
-          $or: [{ workspaceId: finalWorkspaceId }, { workspaceName: finalWorkspaceName }],
+          $or: [{ deskId: finalDeskId }, { workspaceId: finalWorkspaceId }, { workspaceName: finalWorkspaceName }],
           $or: [{ date: finalDate }, { bookingDate: finalDate }],
           bookingStatus: { $ne: 'cancelled' }
         });
@@ -153,25 +161,28 @@ exports.createBooking = async (req, res) => {
     });
 
     if (hasOverlap) {
-      console.warn(`❌ Double booking rejected (409 Conflict): Workspace ${finalWorkspaceId} on ${finalDate} at ${finalStartTime}`);
+      console.warn(`❌ Double booking rejected (409 Conflict): Desk ${finalDeskId} on ${finalDate} at ${finalStartTime}`);
       return res.status(409).json({
         success: false,
-        message: 'This workspace is no longer available for the selected time.'
+        message: 'This desk is no longer available for the selected time.'
       });
     }
 
-    const finalBookingId = bookingId || (`BK-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`);
-    const paymentId = `PAY-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const randomHex = Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase().padStart(4, '0');
+    const finalBookingId = bookingId || `BK-${dateStr}-${randomHex}`;
+    const paymentId = `PAY-${dateStr}-${randomHex}`;
 
     const newBookingDoc = {
       bookingId: finalBookingId,
       userId: finalUserId,
+      deskId: finalDeskId,
       workspaceId: finalWorkspaceId,
       userName: finalUserName,
       userEmail: finalUserEmail,
       workspaceName: finalWorkspaceName,
       workspaceType: finalWorkspaceType,
-      bookingType: 'workspace',
+      bookingType: 'desk',
       date: finalDate,
       startTime: finalStartTime,
       endTime: finalEndTime,
@@ -184,6 +195,7 @@ exports.createBooking = async (req, res) => {
       paymentId,
       paymentStatus: 'paid',
       bookingStatus: 'confirmed',
+      createdBy: 'user',
       createdAt: new Date()
     };
 

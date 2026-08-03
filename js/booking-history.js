@@ -51,9 +51,11 @@ async function loadAndRenderHistory(filter) {
               <span class="badge badge-${b.status.toLowerCase() === 'active' ? 'available' : b.status.toLowerCase() === 'completed' ? 'pro' : 'occupied'}">${b.status}</span>
             </h3>
             <div class="history-card-meta">
-              <span>🆔 Ref: <strong>${b.bookingId}</strong></span>
-              <span>📅 Date: <strong>${b.bookingDate}</strong></span>
-              <span>⏱️ Time: <strong>${b.timeSlot || 'Full Day'}</strong></span>
+              <span>🆔 Ref: <strong style="font-family:monospace; color:var(--primary);">${b.bookingId || b.id}</strong></span>
+              <span>👤 Name: <strong>${b.userName || 'Member'}</strong></span>
+              <span>💻 Desk: <strong style="color:var(--primary-dark);">${b.deskId || b.workspaceId || 'D-101'}</strong></span>
+              <span>📅 Date: <strong>${b.date || b.bookingDate}</strong></span>
+              <span>⏱️ Time: <strong>${b.timeSlot || `${b.startTime || '10:00 AM'} (${b.duration || '1 Hour'})`}</strong></span>
             </div>
           </div>
           <div class="history-card-actions">

@@ -87,6 +87,12 @@
           
           <form id="booking-details-form" onsubmit="event.preventDefault();">
             
+            <!-- User Name Input -->
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" for="booking-user-name">User Name <span style="color: var(--status-occupied);">*</span></label>
+              <input type="text" class="form-control" id="booking-user-name" placeholder="Enter your full name" required>
+            </div>
+
             <!-- Date & Start Time Selection -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
               <div class="form-group" style="margin: 0;">
