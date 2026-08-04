@@ -1,13 +1,3 @@
-const getAdminApiBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.VISIONX_API_URL) return window.VISIONX_API_URL;
-  if (typeof window !== 'undefined' && window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    return 'http://localhost:5000';
-  }
-  return typeof window !== 'undefined' ? window.location.origin : '';
-};
-const ADMIN_API_BASE_URL = getAdminApiBaseUrl();
-window.ADMIN_API_BASE_URL = ADMIN_API_BASE_URL;
-
 // --------------------------------------------------------------------------
 // 1. LOCAL STORAGE MOCK DATA STORE
 // --------------------------------------------------------------------------

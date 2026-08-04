@@ -190,29 +190,8 @@
       document.getElementById('transaction-method-filter')?.addEventListener('change', filterAndRenderTransactions);
     });
 
-    async function loadAllTransactionsPage() {
-      const tbody = document.getElementById('all-transactions-tbody');
-      if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color: var(--text-muted);">⏳ Loading payments from database...</td></tr>`;
-      }
-
-      try {
-        const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-        const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-        const res = await fetch(`${apiBase}/api/payments`, {
-          headers: { 'Authorization': `Bearer ${adminToken}` }
-        });
-        const data = await res.json();
-
-        if (data.success && Array.isArray(data.payments) && data.payments.length > 0) {
-          allTransactionsData = data.payments;
-        } else {
-          allTransactionsData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES) || [];
-        }
-      } catch(e) {
-        allTransactionsData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES) || [];
-      }
-
+    function loadAllTransactionsPage() {
+      allTransactionsData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES) || [];
       filterAndRenderTransactions();
     }
 

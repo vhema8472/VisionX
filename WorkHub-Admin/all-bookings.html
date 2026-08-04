@@ -193,29 +193,8 @@
       document.getElementById('booking-status-filter')?.addEventListener('change', filterAndRenderBookings);
     });
 
-    async function loadAllBookingsPage() {
-      const tbody = document.getElementById('all-bookings-tbody');
-      if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding: 2rem; color: var(--text-muted);">⏳ Loading bookings from database...</td></tr>`;
-      }
-
-      try {
-        const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-        const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-        const res = await fetch(`${apiBase}/api/admin/bookings`, {
-          headers: { 'Authorization': `Bearer ${adminToken}` }
-        });
-        const data = await res.json();
-        
-        if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
-          allBookingsData = data.bookings;
-        } else {
-          allBookingsData = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS) || [];
-        }
-      } catch(e) {
-        allBookingsData = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS) || [];
-      }
-
+    function loadAllBookingsPage() {
+      allBookingsData = WorkHubStore.get(WorkHubStore.KEYS.BOOKINGS) || [];
       filterAndRenderBookings();
     }
 

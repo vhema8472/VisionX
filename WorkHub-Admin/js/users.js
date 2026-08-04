@@ -16,29 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   bindUserEvents();
 });
 
-async function loadUsersData() {
-  usersData = WorkHubStore.get(WorkHubStore.KEYS.USERS);
-  const adminToken = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-  try {
-    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-    const res = await fetch(`${apiBase}/api/admin/users`, {
-      headers: { 'Authorization': `Bearer ${adminToken}` }
-    });
-    const data = await res.json();
-    if (data.success && Array.isArray(data.users) && data.users.length > 0) {
-      usersData = data.users.map(u => ({
-        id: u.userId || u._id,
-        name: u.name,
-        email: u.email,
-        phone: u.phone || '+1 (555) 012-3456',
-        role: u.role === 'admin' ? 'Admin' : 'Member',
-        membership: 'Professional',
-        status: 'Active',
-        joined: new Date(u.createdAt || Date.now()).toLocaleDateString()
-      }));
-    }
-  } catch (e) {}
-
+function loadUsersData() {
+  usersData = WorkHubStore.get(WorkHubStore.KEYS.USERS) || [];
   updateUserMetrics();
   applyFiltersAndRender();
 }

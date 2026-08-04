@@ -145,11 +145,11 @@ function initPaymentConfirmation() {
     if (window.showLoading) showLoading();
 
     try {
-      // 1. Create & Confirm Booking in Backend / MongoDB
+      // 1. Create & Confirm Booking (Local Store)
       const bookingRes = await API.createBooking(confirmedBooking);
 
       if (bookingRes && bookingRes.success) {
-        // 2. Create Demo Payment Record in Backend / MongoDB
+        // 2. Create Payment Record (Local Store)
         const paymentPayload = {
           bookingId: bookingRes.bookingId || bookingId,
           userName: customerName,

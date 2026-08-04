@@ -2,14 +2,7 @@
    WORKHUB - MOCK DATA REPOSITORY & API HANDLERS
    ========================================== */
 
-const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.VISIONX_API_URL) return window.VISIONX_API_URL;
-  if (typeof window !== 'undefined' && window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    return 'http://localhost:5000';
-  }
-  return typeof window !== 'undefined' ? window.location.origin : '';
-};
-const API_BASE_URL = getApiBaseUrl();
+
 
 const WorkHubData = {
   SESSION_KEY: 'workhub_user_session',
@@ -358,7 +351,7 @@ const WorkHubData = {
   ]
 };
 
-// REST API Placeholder Interface
+// Frontend Mock Data Interface
 const API = {
   isAuthenticated() {
     return localStorage.getItem(WorkHubData.LOGGED_IN_KEY) === 'true';
@@ -367,124 +360,85 @@ const API = {
   async loginUser(email, password) {
     if (!email || !password) throw new Error('Email and password required');
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          sessionStorage.setItem('token', data.token);
-        }
-        if (data.user) {
-          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        throw new Error(data.message || 'Invalid email or password.');
-      }
-    } catch (err) {
-      if (err.message && !err.message.toLowerCase().includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Unable to connect to the server. Please try again later.');
-    }
+    const user = {
+      id: 'USR-' + Math.floor(1000 + Math.random() * 9000),
+      name: email.split('@')[0].replace('.', ' ').replace(/^./, str => str.toUpperCase()) || 'Member',
+      email: email,
+      role: 'member',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      membershipPlan: 'Professional Plan',
+      joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    };
+
+    const mockToken = 'mock-jwt-token-' + Date.now();
+    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+    localStorage.setItem('token', mockToken);
+    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+
+    return { success: true, token: mockToken, user, message: 'Login successful' };
   },
 
   async adminLogin(email, pin) {
     if (!email || !pin) throw new Error('Admin email and Secret PIN required');
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/admin-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, pin })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          sessionStorage.setItem('token', data.token);
-        }
-        if (data.user) {
-          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        throw new Error(data.message || 'Invalid admin credentials.');
-      }
-    } catch (err) {
-      if (err.message && !err.message.toLowerCase().includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Unable to connect to the server. Please try again later.');
-    }
+    const adminUser = {
+      id: 'ADM-001',
+      name: 'System Admin',
+      email: email,
+      role: 'admin',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'
+    };
+
+    const mockToken = 'mock-admin-token-' + Date.now();
+    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+    localStorage.setItem('token', mockToken);
+    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(adminUser));
+
+    return { success: true, token: mockToken, user: adminUser, message: 'Admin authentication successful' };
   },
 
   async registerUser(userData) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User',
-          email: userData.email,
-          password: userData.password || 'Password123!',
-          phone: userData.phone || ''
-        })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        return data;
-      } else {
-        throw new Error(data.message || 'Registration failed.');
-      }
-    } catch (err) {
-      if (err.message && !err.message.toLowerCase().includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Unable to connect to the server. Please try again later.');
-    }
+    const user = {
+      id: 'USR-' + Math.floor(1000 + Math.random() * 9000),
+      name: userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User',
+      email: userData.email,
+      phone: userData.phone || '',
+      role: 'member',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      membershipPlan: 'Free Member',
+      joinedDate: 'Just now'
+    };
+
+    const mockToken = 'mock-jwt-token-' + Date.now();
+    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+    localStorage.setItem('token', mockToken);
+    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+
+    return { success: true, token: mockToken, user, message: 'Registration successful' };
   },
 
   async googleSignInUser(googlePayload = {}) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/google-verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(googlePayload)
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          sessionStorage.setItem('token', data.token);
-        }
-        if (data.user) {
-          localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        throw new Error(data.message || 'Google Sign-In failed.');
-      }
-    } catch (err) {
-      if (err.message && !err.message.toLowerCase().includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Unable to connect to the server. Please try again later.');
-    }
+    const user = {
+      id: 'USR-GGL-' + Math.floor(1000 + Math.random() * 9000),
+      name: googlePayload.name || 'Google User',
+      email: googlePayload.email || 'user@gmail.com',
+      avatarUrl: googlePayload.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      membershipPlan: 'Google Sign-In Member'
+    };
+
+    const mockToken = 'mock-google-token-' + Date.now();
+    localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
+    localStorage.setItem('token', mockToken);
+    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
+
+    return { success: true, token: mockToken, user };
   },
 
   async logoutUser() {
-    try {
-      await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
-    } catch(e){}
     localStorage.removeItem(WorkHubData.LOGGED_IN_KEY);
     localStorage.removeItem(WorkHubData.SESSION_KEY);
     localStorage.removeItem('token');
@@ -493,19 +447,6 @@ const API = {
   },
 
   async fetchUserProfile() {
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      if (!token) return { success: false, data: null };
-      const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok && data.success && data.user) {
-        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(data.user));
-        return { success: true, data: data.user };
-      }
-    } catch(e){}
-
     const stored = localStorage.getItem(WorkHubData.SESSION_KEY);
     if (stored) {
       try {
@@ -517,49 +458,29 @@ const API = {
   },
 
   async getUserMemberships() {
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      if (!token) return { success: false, memberships: [] };
-      const res = await fetch(`${API_BASE_URL}/api/users/me/memberships`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        return data;
-      }
-    } catch(e){}
-    return { success: false, memberships: [] };
+    const stored = localStorage.getItem(WorkHubData.SESSION_KEY);
+    const user = stored ? JSON.parse(stored) : {};
+    return Promise.resolve({
+      success: true,
+      memberships: [
+        {
+          id: 'MEM-2026-01',
+          planName: user.membershipPlan || 'Dedicated Desk Pro',
+          status: 'Active',
+          startDate: '2026-01-01',
+          endDate: '2026-12-31',
+          price: '$299 / month'
+        }
+      ]
+    });
   },
 
   async updateProfile(profileData) {
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      if (!token) throw new Error('Authentication token missing.');
-
-      const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(profileData)
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        const storedStr = localStorage.getItem(WorkHubData.SESSION_KEY);
-        let storedUser = storedStr ? JSON.parse(storedStr) : {};
-        const mergedUser = { ...storedUser, ...data.user, ...profileData };
-        localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(mergedUser));
-        return { success: true, data: mergedUser, message: 'Profile updated!' };
-      } else {
-        throw new Error(data.message || 'Failed to update profile.');
-      }
-    } catch(err) {
-      if (err.message && !err.message.toLowerCase().includes('fetch')) {
-        throw err;
-      }
-      throw new Error('Unable to connect to the server. Please try again later.');
-    }
+    const storedStr = localStorage.getItem(WorkHubData.SESSION_KEY);
+    let storedUser = storedStr ? JSON.parse(storedStr) : {};
+    const mergedUser = { ...storedUser, ...profileData };
+    localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(mergedUser));
+    return Promise.resolve({ success: true, data: mergedUser, message: 'Profile updated!' });
   },
 
   async fetchWorkspaces(filters = {}) {
@@ -607,14 +528,6 @@ const API = {
   },
 
   async getWorkspaceAvailability(id, dateStr = "2026-07-31") {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/workspaces/${id}/availability?date=${dateStr}`);
-      const data = await res.json();
-      if (data.success && data.schedule) {
-        return { success: true, date: dateStr, schedule: data.schedule };
-      }
-    } catch (e) {}
-
     const space = WorkHubData.workspaces.find(w => w.id === id) || WorkHubData.workspaces[0];
     const schedule = (space.availabilitySchedule && space.availabilitySchedule[dateStr]) || [
       { start: "09:00", end: "10:00", status: "available", display: "09:00 AM - 10:00 AM" },
@@ -647,35 +560,13 @@ const API = {
       ...bookingPayload
     };
 
-    let backendResult = null;
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(newBooking)
-      });
-      const result = await response.json();
-      if (response.ok && result.success) {
-        backendResult = result;
-        console.log('✅ Booking successfully saved to MongoDB via Express API:', result.booking);
-      } else {
-        return result;
-      }
-    } catch (apiErr) {
-      console.warn('⚠️ Express backend unreachable, using fallback sync:', apiErr.message);
-    }
-
-    // Keep LocalStorage synchronized
+    // Synchronize LocalStorage
     let history = JSON.parse(localStorage.getItem(WorkHubData.BOOKINGS_KEY) || 'null');
     if (!history) history = [...WorkHubData.initialBookings];
     history.unshift(newBooking);
     localStorage.setItem(WorkHubData.BOOKINGS_KEY, JSON.stringify(history));
 
-    // Synchronize Admin Dashboard local store
+    // Synchronize Admin Dashboard store
     try {
       const adminBookings = JSON.parse(localStorage.getItem('workhub_bookings_data') || '[]');
       adminBookings.unshift({
@@ -691,41 +582,18 @@ const API = {
       localStorage.setItem('workhub_bookings_data', JSON.stringify(adminBookings));
     } catch(e){}
 
-    return backendResult || { success: true, bookingId, booking: newBooking };
+    return Promise.resolve({ success: true, bookingId, booking: newBooking });
   },
 
   async createPayment(paymentPayload) {
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const response = await fetch(`${API_BASE_URL}/api/payments/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(paymentPayload)
-      });
-      const result = await response.json();
-      return result;
-    } catch(err) {
-      return { success: false, message: err.message };
-    }
+    return Promise.resolve({
+      success: true,
+      transactionId: 'TXN-' + Math.random().toString(36).substring(2,10).toUpperCase(),
+      message: 'Payment processed successfully (Frontend Mock).'
+    });
   },
 
   async getBookingHistory() {
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-      const res = await fetch(`${API_BASE_URL}/api/users/me/bookings`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
-        return { success: true, data: data.bookings };
-      }
-    } catch (e) {}
-
     let history = JSON.parse(localStorage.getItem(WorkHubData.BOOKINGS_KEY) || 'null');
     if (!history) {
       history = [...WorkHubData.initialBookings];

@@ -11,24 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   bindPaymentEvents();
 });
 
-async function loadInvoicesData() {
-  invoicesData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES);
-  try {
-    const apiBase = window.ADMIN_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-    const res = await fetch(`${apiBase}/api/admin/payments/recent`);
-    const data = await res.json();
-    if (data.success && Array.isArray(data.payments) && data.payments.length > 0) {
-      invoicesData = data.payments.map(p => ({
-        id: p.paymentId || p.transactionId,
-        customer: p.userName || 'Customer',
-        amount: typeof p.amount === 'number' ? `$${p.amount.toFixed(2)}` : p.amount,
-        date: new Date(p.createdAt || Date.now()).toLocaleDateString(),
-        method: p.paymentMethod || 'Credit Card',
-        status: p.status === 'paid' ? 'Paid' : 'Pending'
-      }));
-    }
-  } catch (e) {}
-
+function loadInvoicesData() {
+  invoicesData = WorkHubStore.get(WorkHubStore.KEYS.INVOICES) || [];
   renderInvoicesTable();
 }
 

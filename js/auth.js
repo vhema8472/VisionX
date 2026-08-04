@@ -224,11 +224,6 @@ function initGoogleSignInButton() {
     btn.addEventListener('click', async (e) => {
       e.preventDefault();
 
-      // If Google Client ID configured, redirect to Google OAuth URL
-      const googleClientId = 'your-google-client-id-here.apps.googleusercontent.com';
-        const apiBase = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-        window.location.href = `${apiBase}/api/auth/google`;
-
       showLoading();
       try {
         const response = await API.googleSignInUser({
