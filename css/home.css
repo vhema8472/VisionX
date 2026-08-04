@@ -343,16 +343,70 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .hero-title { font-size: 2.75rem; }
+@media (max-width: 1023.98px) {
+  .hero-section {
+    padding: 4rem 1.5rem;
+    text-align: center;
+  }
+
+  .hero-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
+  }
+
+  /* Explore Membership button on its own separate row below hero content */
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-actions .btn-teal-light,
+  .hero-actions a[href*="membership"] {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+  }
+
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .workspace-grid { grid-template-columns: repeat(2, 1fr); }
   .promo-card { grid-template-columns: 1fr; padding: 2.5rem; }
 }
 
-@media (max-width: 768px) {
-  .hero-title { font-size: 2.25rem; }
+@media (max-width: 767.98px) {
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+
+  .hero-title { font-size: 2.15rem; }
   .features-grid { grid-template-columns: 1fr; }
   .workspace-grid { grid-template-columns: 1fr; }
   .promo-features-grid { grid-template-columns: 1fr; }
 }
+
