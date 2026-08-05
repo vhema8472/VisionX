@@ -370,13 +370,11 @@ const API = {
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     };
 
-    const mockToken = 'mock-jwt-token-' + Date.now();
     localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    localStorage.setItem('token', mockToken);
-    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem('workhub_demo_session_active', 'true');
     localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
 
-    return { success: true, token: mockToken, user, message: 'Login successful' };
+    return { success: true, user, message: 'Demo sign-in successful' };
   },
 
   async adminLogin(email, pin) {
@@ -390,13 +388,11 @@ const API = {
       avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'
     };
 
-    const mockToken = 'mock-admin-token-' + Date.now();
     localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    localStorage.setItem('token', mockToken);
-    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem('workhub_demo_session_active', 'true');
     localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(adminUser));
 
-    return { success: true, token: mockToken, user: adminUser, message: 'Admin authentication successful' };
+    return { success: true, user: adminUser, message: 'Admin authentication successful' };
   },
 
   async registerUser(userData) {
@@ -411,36 +407,33 @@ const API = {
       joinedDate: 'Just now'
     };
 
-    const mockToken = 'mock-jwt-token-' + Date.now();
     localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    localStorage.setItem('token', mockToken);
-    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem('workhub_demo_session_active', 'true');
     localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
 
-    return { success: true, token: mockToken, user, message: 'Registration successful' };
+    return { success: true, user, message: 'Registration successful' };
   },
 
   async googleSignInUser(googlePayload = {}) {
     const user = {
       id: 'USR-GGL-' + Math.floor(1000 + Math.random() * 9000),
-      name: googlePayload.name || 'Google User',
-      email: googlePayload.email || 'user@gmail.com',
+      name: googlePayload.name || 'Demo Google User',
+      email: googlePayload.email || 'demo.user@gmail.com',
       avatarUrl: googlePayload.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-      membershipPlan: 'Google Sign-In Member'
+      membershipPlan: 'Demo Account Member'
     };
 
-    const mockToken = 'mock-google-token-' + Date.now();
     localStorage.setItem(WorkHubData.LOGGED_IN_KEY, 'true');
-    localStorage.setItem('token', mockToken);
-    sessionStorage.setItem('token', mockToken);
+    localStorage.setItem('workhub_demo_session_active', 'true');
     localStorage.setItem(WorkHubData.SESSION_KEY, JSON.stringify(user));
 
-    return { success: true, token: mockToken, user };
+    return { success: true, user };
   },
 
   async logoutUser() {
     localStorage.removeItem(WorkHubData.LOGGED_IN_KEY);
     localStorage.removeItem(WorkHubData.SESSION_KEY);
+    localStorage.removeItem('workhub_demo_session_active');
     localStorage.removeItem('token');
     sessionStorage.clear();
     return Promise.resolve({ success: true, message: 'Logged out successfully.' });

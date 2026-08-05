@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - WorkHub Management Suite</title>
+  <meta name="disclaimer" content="Academic Demo Prototype - No real credentials or financial data are processed.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/dashboard.css">
@@ -15,15 +16,15 @@
     <div class="login-header">
       <div class="login-logo">W</div>
       <h1 class="login-title">WorkHub Admin</h1>
-      <p class="login-subtitle">Smart Workspace & Cafe Management System</p>
+      <p class="login-subtitle">Smart Workspace & Cafe Management System (Demo)</p>
     </div>
 
     <div id="login-error-msg" class="badge badge-danger text-center" style="display:none; padding:0.6rem; font-size:0.85rem;"></div>
 
-    <form id="login-form">
+    <form id="login-form" autocomplete="off">
       <div class="form-group">
         <label class="form-label" for="login-email">Email Address</label>
-        <input type="email" id="login-email" class="form-control" placeholder="admin@workhub.com" required value="admin@workhub.com">
+        <input type="email" id="login-email" class="form-control" placeholder="admin@workhub.com" required autocomplete="off">
       </div>
 
       <div class="form-group">
@@ -32,7 +33,7 @@
           <a href="#" style="font-size:0.78rem;" onclick="alert('Demo Admin Password is: admin123'); return false;">Forgot password?</a>
         </div>
         <div style="position:relative;">
-          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="admin123">
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="off">
           <button type="button" id="toggle-password" style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); font-size:1.1rem; color:var(--text-muted);">👁️</button>
         </div>
       </div>
@@ -52,7 +53,7 @@
     </div>
 
     <div style="background-color: var(--light-blue-bg); padding:0.75rem; border-radius:var(--radius-md); font-size:0.78rem; color:var(--primary-blue);" class="text-center">
-      🔐 <strong>Demo Credentials:</strong><br>
+      🎓 <strong>Academic Demo Credentials:</strong><br>
       Email: <code>admin@workhub.com</code> | Password: <code>admin123</code>
     </div>
   </div>

@@ -97,9 +97,8 @@ const WorkHubStore = {
 // 2. AUTHENTICATION HELPERS
 // --------------------------------------------------------------------------
 function checkAuth(redirectIfAuth = false) {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem(WorkHubStore.KEYS.AUTH_USER) || 'null');
-  const isAuth = !!token || (user && user.isLoggedIn);
+  const isAuth = localStorage.getItem('isLoggedIn') === 'true' || (user && user.isLoggedIn);
 
   if (!isAuth && !redirectIfAuth) {
     window.location.href = 'login.html';
@@ -110,8 +109,8 @@ function checkAuth(redirectIfAuth = false) {
 
 function logoutAdmin() {
   localStorage.removeItem(WorkHubStore.KEYS.AUTH_USER);
-  localStorage.removeItem('token');
-  sessionStorage.removeItem('token');
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('workhub_demo_session_active');
   showToast('Logged out successfully', 'info');
   setTimeout(() => {
     window.location.href = 'login.html';

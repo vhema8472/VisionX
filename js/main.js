@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Auth Guard & Navbar Dynamic UI Behavior
 function initAuthStateGuard() {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' && !!token;
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
   
   // List of Protected Pages requiring Login Authentication

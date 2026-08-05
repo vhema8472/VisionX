@@ -1,0 +1,5 @@
+# Robots.txt for WorkHub Demo Prototype
+User-agent: *
+Allow: /
+
+Sitemap: https://vision-x-v01.vercel.app/sitemap.xml
