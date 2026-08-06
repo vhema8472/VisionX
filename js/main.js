@@ -51,11 +51,10 @@ function initAuthStateGuard() {
         logoutBtn.addEventListener('click', handleGlobalLogout);
       }
     } else {
-      // User Not Logged In: Show Login & Register, Hide Profile
+      // User Not Logged In: Show Log In only
       headerActions.innerHTML = `
         <a href="workspace.html" class="btn btn-primary btn-sm">Book a Desk</a>
         <a href="login.html" class="btn btn-secondary btn-sm" id="auth-nav-link">Log In</a>
-        <a href="register.html" class="btn btn-outline btn-sm">Register</a>
         <button class="mobile-toggle" aria-label="Toggle navigation menu">☰</button>
       `;
     }
